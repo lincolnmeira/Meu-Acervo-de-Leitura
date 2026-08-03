@@ -53,7 +53,7 @@ meu-acervo-de-leitura/
 
 ## 📐 Diagrama UML
 
-![Diagrama UML](docs/diagrama-uml.png)
+![Diagrama UML](UML_MEU-ACERVO-DE-LEITURA_VERSAO_FINAL.drawio.png)
 
 ## ▶️ Como executar
 
