@@ -1,0 +1,52 @@
+<mxfile host="Electron">
+  <diagram name="Página-1" id="ZezLVV-3ZNoba7uif3sP">
+    <mxGraphModel dx="936" dy="569" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-18" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Livro" vertex="1">
+          <mxGeometry height="140" width="140" x="300" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-19" parent="ltIPDUQdzhhSLqjWmg_R-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ título: String&lt;div&gt;+ autor: String&lt;/div&gt;&lt;div&gt;+ gênero: String&lt;/div&gt;&lt;div&gt;+ status: String&lt;/div&gt;&lt;div&gt;+ nota: Int&lt;/div&gt;&lt;div&gt;+ dataCadastro: int&lt;/div&gt;&lt;div&gt;+ dataConclusão: int&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="114" width="140" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-22" edge="1" parent="ltIPDUQdzhhSLqjWmg_R-18" style="endArrow=classic;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=elbowEdgeStyle;align=left;verticalAlign=bottom;rounded=0;endFill=1;" value="1">
+          <mxGeometry relative="1" x="-1" y="3" as="geometry">
+            <Array as="points">
+              <mxPoint x="70" y="190" />
+            </Array>
+            <mxPoint x="60" y="140" as="sourcePoint" />
+            <mxPoint x="70" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-31" edge="1" parent="ltIPDUQdzhhSLqjWmg_R-18" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;entryX=0.435;entryY=-0.031;entryDx=0;entryDy=0;entryPerimeter=0;" target="ltIPDUQdzhhSLqjWmg_R-27" value="1">
+          <mxGeometry relative="1" x="-1" y="3" as="geometry">
+            <Array as="points">
+              <mxPoint x="230.91" y="140" />
+            </Array>
+            <mxPoint x="60" y="140" as="sourcePoint" />
+            <mxPoint x="220" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-23" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="enum: Genero" vertex="1">
+          <mxGeometry height="110" width="140" x="300" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-24" parent="ltIPDUQdzhhSLqjWmg_R-23" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+gênero: Romance&lt;div&gt;+gênero: Ficção&lt;div&gt;+gênero: Politica&lt;div&gt;+gênero: Economia&lt;div&gt;+gênero: Finanças&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="84" width="140" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-27" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;blockquote style=&quot;margin: 0 0 0 40px; border: none; padding: 0px;&quot;&gt;enum:&amp;nbsp; StatusLeitura&lt;/blockquote&gt;" vertex="1">
+          <mxGeometry height="104" width="140" x="470" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-28" parent="ltIPDUQdzhhSLqjWmg_R-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ field: type" vertex="1">
+          <mxGeometry height="26" width="140" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-29" parent="ltIPDUQdzhhSLqjWmg_R-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ field: type" vertex="1">
+          <mxGeometry height="26" width="140" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="ltIPDUQdzhhSLqjWmg_R-30" parent="ltIPDUQdzhhSLqjWmg_R-27" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ field: type" vertex="1">
+          <mxGeometry height="26" width="140" y="78" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
