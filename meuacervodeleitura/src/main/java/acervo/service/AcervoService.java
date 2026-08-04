@@ -13,14 +13,17 @@ public class AcervoService {
 
     private List<Livro> livros;
     private LogService logService;
+    private ArquivoJsonService arquivoJsonService;
 
     public AcervoService() {
-        this.livros = new ArrayList<>();
+        this.arquivoJsonService = new ArquivoJsonService();
+        this.livros = arquivoJsonService.carregar();  // carrega os dados salvos ao iniciar
         this.logService = new LogService();
     }
 
     public void adicionarLivro(Livro livro) {
         livros.add(livro);
+        arquivoJsonService.salvar(livros);  // persiste após a mudança
         logService.registrarAcao(new RegistroAtividade(
                 "ADICIONAR_LIVRO",
                 "Livro adicionado: " + livro.getTitulo()
@@ -29,6 +32,7 @@ public class AcervoService {
 
     public void removerLivro(Livro livro) {
         livros.remove(livro);
+        arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "REMOVER_LIVRO",
                 "Livro removido: " + livro.getTitulo()
@@ -42,6 +46,7 @@ public class AcervoService {
             livro.setDataConclusao(java.time.LocalDate.now());
         }
 
+        arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "ATUALIZAR_STATUS",
                 "Livro '" + livro.getTitulo() + "' -> status: " + status

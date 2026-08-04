@@ -11,11 +11,11 @@ public class RegistroAtividade {
 
 
     //Construtor
-    public RegistroAtividade(String descricao, String tipoAcao){
-        this.descricao = descricao;
-        this.tipoAcao = tipoAcao;
-        this.timestamp = LocalDateTime.now();
-    }
+    public RegistroAtividade(String tipoAcao, String descricao){
+    this.tipoAcao = tipoAcao;
+    this.descricao = descricao;
+    this.timestamp = LocalDateTime.now();
+}
 
     //Getters
     public String getDescricao() {
