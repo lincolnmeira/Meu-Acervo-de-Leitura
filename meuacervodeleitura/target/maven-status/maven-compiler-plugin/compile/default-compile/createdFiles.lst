@@ -1,8 +1,0 @@
-acervo\model\StatusLeitura.class
-acervo\service\AcervoService.class
-acervo\service\EstatisticasService.class
-acervo\model\Genero.class
-acervo\model\Livro.class
-acervo\log\RegistroAtividade.class
-acervo\service\LogService.class
-acervo\Main.class
