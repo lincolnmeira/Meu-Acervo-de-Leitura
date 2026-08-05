@@ -1,10 +1,18 @@
 package acervo.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
+/**
+ * Representa um livro dentro do acervo pessoal de leitura.
+ * Guarda as informações principais (título, autor, gênero) e
+ * o controle de status de leitura (quero ler, lendo, lido).
+ */
 public class Livro {
-    // Atributos
 
+    // ===================== ATRIBUTOS =====================
+
+    private String id;                  // identificador único do livro, gerado automaticamente
     private String titulo;
     private String autor;
     private Genero genero;
@@ -14,8 +22,14 @@ public class Livro {
     private LocalDate dataConclusao;
 
 
-    // Construtor
+    // ===================== CONSTRUTOR =====================
+
+    /**
+     * Cria um novo livro já com id gerado automaticamente,
+     * status inicial "Quero_ler" e data de cadastro igual à data atual.
+     */
     public Livro(String titulo, String autor, Genero genero ){
+        this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.autor = autor;
         this.genero = genero;
@@ -24,7 +38,18 @@ public class Livro {
 
     }
 
- // Getters e Setters
+    // ===================== GETTERS E SETTERS =====================
+    // Como todos os atributos são "private" (encapsulamento), o acesso de fora da classe
+    // só é possível através desses métodos:
+    // - GET  -> permite apenas LER o valor do atributo
+    // - SET  -> permite ALTERAR o valor do atributo
+    // Isso protege a classe de mudanças diretas e descontroladas nos seus dados.
+
+    public String getId() {
+        return id;
+    }
+    // Sem setId(): um identificador não deve ser alterado após a criação do livro
+
     public String getTitulo() {
         return titulo;
     }
@@ -88,10 +113,18 @@ public class Livro {
         this.dataConclusao = dataConclusao;
     }
 
-@Override
+
+    // ===================== TOSTRING =====================
+
+    /**
+     * Representação textual do livro, útil para debug e para exibição
+     * no histórico de atividades e na listagem do terminal.
+     */
+    @Override
     public String toString() {
         return "Livro{" +
-                "titulo='" + titulo + '\'' +
+                "id='" + id + '\'' +
+                ", titulo='" + titulo + '\'' +
                 ", autor='" + autor + '\'' +
                 ", genero=" + genero +
                 ", status=" + status +
@@ -102,11 +135,5 @@ public class Livro {
     
     }
     
-
-
-
-
-
-
 
 }
