@@ -23,11 +23,13 @@ public class ApiServer {
 
     public ApiServer() {
         this.acervoService = new AcervoService();
+
         // Registra o adapter de LocalDate para o Gson conseguir converter
         // essas datas para JSON sem travar por causa da reflexão do Java
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
+
         this.app = Javalin.create();
 
         configurarRotas();
@@ -35,19 +37,26 @@ public class ApiServer {
 
     /**
      * Define todos os endpoints (rotas) da API.
+     * Cada rota é identificada por um comentário de cabeçalho,
+     * facilitando localizar e adicionar novos endpoints no futuro.
      */
     private void configurarRotas() {
 
-        // GET /livros -> retorna a lista completa de livros em formato JSON
+        // ===== [GET] /livros -> lista todos os livros cadastrados =====
         app.get("/livros", ctx -> {
             var livros = acervoService.getLivros();
             ctx.contentType("application/json");
             ctx.result(gson.toJson(livros));
         });
 
-        // POST /livros -> cadastra um novo livro a partir do JSON enviado no corpo da requisição
+        // ===== [POST] /livros -> cadastra um novo livro =====
         app.post("/livros", ctx -> {
-            Livro novoLivro = gson.fromJson(ctx.body(), Livro.class);
+            // NovoLivroRequest recebe apenas os dados de entrada (titulo, autor, genero).
+            // O objeto Livro "de verdade" é criado a partir do construtor da classe,
+            // garantindo que id, status inicial e data de cadastro sejam preenchidos corretamente.
+            NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+
+            Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
             acervoService.adicionarLivro(novoLivro);
 
             ctx.contentType("application/json");
