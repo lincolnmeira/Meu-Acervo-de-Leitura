@@ -10,6 +10,7 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 - Marcar livros como lidos, atualizando estatísticas automaticamente
 - Visualizar quantos livros já foram lidos, por gênero
 - Gerar um log automático de todas as ações realizadas
+- Consumir os dados via API REST (JSON)
 
 ## 🚀 Funcionalidades
 
@@ -17,57 +18,96 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 - [x] Classificação por gênero (Ficção, Romance, Política, etc.)
 - [x] Controle de status (Lido / Quero Ler / Lendo)
 - [x] Estatísticas de leitura
-- [x] Log de atividades em arquivo de texto
+- [x] Log de atividades
 - [x] Persistência de dados em JSON
-- [ ] API REST
+- [x] Menu interativo via terminal
+- [x] API REST (Javalin)
 - [ ] Dashboard front-end
 
 ## 🛠️ Tecnologias
 
-- Java (POO, estruturas de dados)
-- HTML, CSS e JavaScript (front-end)
-- JSON (persistência de dados)
+- **Java 21** (POO, estruturas de dados)
+- **Maven** (gerenciamento de dependências e build)
+- **Gson** (serialização/persistência em JSON)
+- **Javalin** (API REST)
+- HTML, CSS e JavaScript (front-end — em desenvolvimento)
 
 ## 📁 Estrutura do Projeto
 
 \`\`\`
-meu-acervo-de-leitura/
-├── src/
-│   ├── model/
-│   ├── service/
-│   ├── persistence/
-│   └── Main.java
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
+Meu-Acervo-de-Leitura/
 ├── docs/
 │   └── diagrama-uml.png
-├── data/
+├── src/
+│   ├── main/java/acervo/
+│   │   ├── api/            # Endpoints da API REST (Javalin)
+│   │   ├── log/            # Registro de atividades
+│   │   ├── model/          # Classes de domínio (Livro, Genero, StatusLeitura)
+│   │   ├── service/        # Regras de negócio e persistência
+│   │   └── Main.java       # Menu interativo via terminal
+│   └── test/java/
+├── data/                   # Gerado em runtime (ignorado pelo git)
 │   └── livros.json
-├── logs/
-│   └── log.txt
 ├── .gitignore
+├── pom.xml
 └── README.md
 \`\`\`
 
 ## 📐 Diagrama UML
 
-![Diagrama UML](UML_MEU-ACERVO-DE-LEITURA_VERSAO_FINAL.drawio.png)
+![Diagrama UML](docs/diagrama-uml.png)
 
 ## ▶️ Como executar
 
+### Pré-requisitos
+- Java 21+
+- Maven
+
+### Clonar o repositório
 \`\`\`bash
-# Clone o repositório
 git clone git@github.com:lincolnmeira/Meu-Acervo-de-Leitura.git
-
-# Entre na pasta
-cd meu-acervo-de-leitura
-
-# Compile e execute (ajuste conforme sua configuração)
-javac src/Main.java -d bin
-java -cp bin Main
+cd Meu-Acervo-de-Leitura
 \`\`\`
+
+### Rodar o menu interativo (terminal)
+\`\`\`bash
+mvn clean compile
+mvn exec:java -Dexec.mainClass="acervo.Main"
+\`\`\`
+
+### Rodar a API REST
+\`\`\`bash
+mvn clean compile
+mvn exec:java -Dexec.mainClass="acervo.api.ApiServer"
+\`\`\`
+O servidor sobe em \`http://localhost:7000\`.
+
+## 🔌 Endpoints da API
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET    | \`/livros\` | Lista todos os livros cadastrados |
+| POST   | \`/livros\` | Cadastra um novo livro |
+| PUT    | \`/livros/{id}/status\` | Atualiza o status de leitura de um livro |
+| DELETE | \`/livros/{id}\` | Remove um livro do acervo |
+| GET    | \`/estatisticas\` | Retorna estatísticas de leitura (total lido, por gênero, por status) |
+
+### Exemplo de cadastro (POST /livros)
+\`\`\`json
+{
+  "titulo": "Sapiens",
+  "autor": "Yuval Noah Harari",
+  "genero": "CIENCIAS_EXATAS"
+}
+\`\`\`
+
+## 🔧 Melhorias Futuras
+
+- [ ] Validação de entrada mais robusta na API — atualmente, se o campo `genero` enviado no `POST /livros` não corresponder exatamente (case-sensitive) a uma constante do enum `Genero`, o campo fica silenciosamente `null` em vez de retornar um erro claro. Próximo passo: validar a entrada e responder com `400 Bad Request` e mensagem explicativa quando o gênero for inválido.
+- [ ] Testes automatizados (JUnit)
+- [ ] Autenticação na API
+- [ ] Dashboard front-end (HTML/CSS/JS) consumindo a API REST
+- [ ] Deploy da API (Render/Railway)
 
 ## 📸 Prints
 
