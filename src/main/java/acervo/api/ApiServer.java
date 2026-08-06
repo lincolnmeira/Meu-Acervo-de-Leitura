@@ -20,9 +20,11 @@ public class ApiServer {
     private final Javalin app;
     private final AcervoService acervoService;
     private final Gson gson;
+    private final acervo.service.EstatisticasService estatisticasService;
 
     public ApiServer() {
         this.acervoService = new AcervoService();
+        this.estatisticasService = new acervo.service.EstatisticasService();
 
         // Registra o adapter de LocalDate para o Gson conseguir converter
         // essas datas para JSON sem travar por causa da reflexão do Java
@@ -106,6 +108,20 @@ public class ApiServer {
 
             acervoService.removerLivro(livro);
             ctx.status(204); // 204 = "No Content" - sucesso, mas sem corpo de resposta (padrão para DELETE)
+        });
+
+        // ===== [GET] /estatisticas -> retorna estatísticas de leitura (por gênero, por
+        // status, total lido) =====
+        app.get("/estatisticas", ctx -> {
+            var livros = acervoService.getLivros();
+
+            var resposta = new java.util.HashMap<String, Object>();
+            resposta.put("totalLido", estatisticasService.totalLido(livros));
+            resposta.put("porGenero", estatisticasService.contarPorGenero(livros));
+            resposta.put("porStatus", estatisticasService.contarPorStatus(livros));
+
+            ctx.contentType("application/json");
+            ctx.result(gson.toJson(resposta));
         });
     }
 
