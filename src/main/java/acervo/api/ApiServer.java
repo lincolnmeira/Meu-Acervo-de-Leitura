@@ -88,6 +88,25 @@ public class ApiServer {
             ctx.contentType("application/json");
             ctx.result(gson.toJson(livro));
         });
+
+        // ===== [DELETE] /livros/{id} -> remove um livro do acervo =====
+        app.delete("/livros/{id}", ctx -> {
+            String id = ctx.pathParam("id");
+
+            Livro livro = acervoService.getLivros().stream()
+                    .filter(l -> id.equals(l.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (livro == null) {
+                ctx.status(404);
+                ctx.result("Livro não encontrado");
+                return;
+            }
+
+            acervoService.removerLivro(livro);
+            ctx.status(204); // 204 = "No Content" - sucesso, mas sem corpo de resposta (padrão para DELETE)
+        });
     }
 
     /**
