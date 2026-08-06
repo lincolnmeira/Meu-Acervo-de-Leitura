@@ -53,7 +53,8 @@ public class ApiServer {
         app.post("/livros", ctx -> {
             // NovoLivroRequest recebe apenas os dados de entrada (titulo, autor, genero).
             // O objeto Livro "de verdade" é criado a partir do construtor da classe,
-            // garantindo que id, status inicial e data de cadastro sejam preenchidos corretamente.
+            // garantindo que id, status inicial e data de cadastro sejam preenchidos
+            // corretamente.
             NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
 
             Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
@@ -62,6 +63,30 @@ public class ApiServer {
             ctx.contentType("application/json");
             ctx.status(201); // 201 = "Created", código HTTP padrão para criação bem-sucedida
             ctx.result(gson.toJson(novoLivro));
+        });
+
+        // ===== [PUT] /livros/{id}/status -> atualiza o status de leitura de um livro
+        // =====
+        app.put("/livros/{id}/status", ctx -> {
+            String id = ctx.pathParam("id");
+
+            // Busca o livro pelo id; se não encontrar, retorna erro 404
+            Livro livro = acervoService.getLivros().stream()
+                    .filter(l -> id.equals(l.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (livro == null) {
+                ctx.status(404);
+                ctx.result("Livro não encontrado");
+                return;
+            }
+
+            AtualizarStatusRequest dados = gson.fromJson(ctx.body(), AtualizarStatusRequest.class);
+            acervoService.atualizarStatus(livro, dados.status);
+
+            ctx.contentType("application/json");
+            ctx.result(gson.toJson(livro));
         });
     }
 
