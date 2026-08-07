@@ -6,21 +6,61 @@
 </head>
 <body>
 
-    <!-- Título principal da página -->
     <h1>Meu Acervo de Leitura</h1>
 
+    <!-- ===================== FORMULÁRIO DE CADASTRO ===================== -->
     <!-- 
-        Container onde a lista de livros será renderizada dinamicamente.
-        O texto "Carregando livros..." é apenas um placeholder inicial,
-        substituído pelo JavaScript assim que os dados da API chegarem.
+        Formulário para cadastrar um novo livro.
+        O evento de "submit" é capturado no script.js, que envia os dados
+        para a API via POST /livros, sem recarregar a página.
     -->
+    <section>
+        <h2>Cadastrar novo livro</h2>
+        <form id="form-cadastro">
+
+            <!-- Campo de texto livre para o título do livro -->
+            <input type="text" id="input-titulo" placeholder="Título" required>
+
+            <!-- Campo de texto livre para o autor -->
+            <input type="text" id="input-autor" placeholder="Autor" required>
+
+            <!-- 
+                Select (lista fixa) para o gênero, em vez de campo de texto livre.
+                Isso evita erros de digitação, já que o back-end (enum Genero)
+                exige correspondência exata entre o texto e as constantes do enum.
+            -->
+            <select id="input-genero" required>
+                <option value="">Selecione o gênero</option>
+                <option value="POLITICA">Política</option>
+                <option value="ECONOMIA">Economia</option>
+                <option value="FINACAS">Finanças</option>
+                <option value="FICCAO">Ficção</option>
+                <option value="ROMANCE">Romance</option>
+                <option value="AUTO_AJUDA">Auto-ajuda</option>
+                <option value="TECNOLOGIA">Tecnologia</option>
+                <option value="CIENCIAS_EXATAS">Ciências Exatas</option>
+            </select>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <!-- ===================== LISTAGEM DE LIVROS ===================== -->
+    <!-- 
+        Container onde a lista de livros é renderizada dinamicamente pelo JS.
+        O conteúdo inicial ("Carregando livros...") é substituído assim que
+        a resposta da API chega (ver função renderizarLivros no script.js).
+    -->
+    <h2>Meus livros</h2>
     <div id="lista-livros">
         <p>Carregando livros...</p>
     </div>
 
     <!-- 
-        Script JS carregado no final do <body> para garantir que todo
-        o HTML já esteja disponível no DOM antes do JS tentar manipulá-lo.
+        Script carregado no final do <body> para garantir que todo o HTML
+        acima já exista no DOM antes do JS tentar acessar esses elementos.
     -->
     <script src="script.js"></script>
 </body>
