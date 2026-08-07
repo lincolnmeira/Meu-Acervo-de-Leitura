@@ -31,8 +31,12 @@ public class ApiServer {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
-
-        this.app = Javalin.create();
+// Configura o Javalin para permitir requisições de qualquer origem (CORS)
+        this.app = Javalin.create(config -> {
+            config.bundledPlugins.enableCors(cors -> {
+                cors.addRule(it -> it.anyHost());
+            });
+        });
 
         configurarRotas();
     }
