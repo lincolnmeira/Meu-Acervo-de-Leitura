@@ -32,3 +32,50 @@ h2 {
     color: #4A1B0C;
     margin-bottom: 0.75rem;
 }
+
+/* ===================== PAINEL DE ESTATÍSTICAS ===================== */
+
+#painel-estatisticas {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #E3D9C6; /* linha sutil separando das outras seções */
+}
+
+/* Container horizontal com os destaques numéricos (total lidos / na fila) */
+.stats-destaque {
+    display: flex;
+    gap: 2rem;
+    margin: 0.75rem 0;
+}
+
+.stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.stat-numero {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Verde para "lidos" - reforça a sensação de conquista */
+.stat-lidos {
+    color: #4c9313;
+}
+
+/* Tom neutro para "na fila" - discreto, sem competir com o verde */
+.stat-fila {
+    color: #10100f;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #5F5E5A;
+}
+
+/* Lista de gêneros, texto menor e mais discreto */
+.stats-generos {
+    font-size: 0.85rem;
+    color: #5F5E5A;
+}

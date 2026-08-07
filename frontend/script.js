@@ -192,26 +192,33 @@ async function carregarEstatisticas() {
 
 /**
  * Recebe o objeto de estatísticas (totalLido, porGenero, porStatus)
- * e monta o HTML de exibição dentro do painel.
+ * e monta o HTML de exibição dentro do painel, no formato de
+ * destaques numéricos (total lidos / na fila) seguido de detalhes por gênero.
  */
 function renderizarEstatisticas(dados) {
     const painel = document.getElementById("painel-estatisticas");
 
-    // Transforma o objeto porGenero (ex: {POLITICA: 2, FICCAO: 1})
-    // em uma lista de texto legível: "POLITICA: 2, FICCAO: 1"
+    // Quantidade "na fila" = total de livros com status Quero_ler
+    const naFila = dados.porStatus["Quero_ler"] || 0;
+
+    // Lista de gêneros com contagem, formatada como texto legível
     const generosTexto = Object.entries(dados.porGenero)
         .map(([genero, qtd]) => `${genero}: ${qtd}`)
-        .join(", ") || "Nenhum";
-
-    const statusTexto = Object.entries(dados.porStatus)
-        .map(([status, qtd]) => `${status}: ${qtd}`)
-        .join(", ") || "Nenhum";
+        .join(" · ") || "Nenhum";
 
     painel.innerHTML = `
-        <h2>Estatísticas</h2>
-        <p><strong>Total de livros lidos:</strong> ${dados.totalLido}</p>
-        <p><strong>Por gênero:</strong> ${generosTexto}</p>
-        <p><strong>Por status:</strong> ${statusTexto}</p>
+        <h2>Minha estante</h2>
+        <div class="stats-destaque">
+            <div class="stat-item">
+                <span class="stat-numero stat-lidos">${dados.totalLido}</span>
+                <span class="stat-label">total lidos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-numero stat-fila">${naFila}</span>
+                <span class="stat-label">na fila</span>
+            </div>
+        </div>
+        <p class="stats-generos">${generosTexto}</p>
     `;
 }
 
