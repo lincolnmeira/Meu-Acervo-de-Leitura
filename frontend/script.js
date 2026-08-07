@@ -32,25 +32,33 @@ async function carregarLivros() {
 function renderizarLivros(livros) {
     const container = document.getElementById("lista-livros");
 
-    // Caso não haja nenhum livro cadastrado ainda
     if (livros.length === 0) {
         container.innerHTML = "<p>Nenhum livro cadastrado ainda.</p>";
         return;
     }
 
-    // Para cada livro, monta um bloco HTML com suas informações.
-    // .map() transforma cada objeto Livro em uma string HTML,
-    // e .join("") junta todas as strings em um único bloco final.
     const html = livros.map(livro => `
         <div class="livro">
             <strong>${livro.titulo}</strong> (${livro.autor})<br>
             Gênero: ${livro.genero} | Status: ${livro.status}
+            <br>
+
+            <!-- 
+                data-id guarda o id do livro no próprio botão.
+                Isso permite recuperar qual livro foi clicado, sem precisar
+                de variáveis globais ou índices de lista.
+            -->
+            <button class="btn-marcar-lido" data-id="${livro.id}">Marcar como lido</button>
+            <button class="btn-remover" data-id="${livro.id}">Remover</button>
         </div>
     `).join("");
 
     container.innerHTML = html;
-}
 
+    // Depois de inserir o HTML no DOM, conecta os eventos de clique
+    // em todos os botões recém-criados.
+    conectarBotoesDeAcao();
+}
 
 // ===================== CADASTRO DE NOVO LIVRO =====================
 
@@ -93,6 +101,79 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
     }
 });
 
+/**
+ * Adiciona os event listeners nos botões de "marcar como lido" e "remover"
+ * de cada livro da listagem. Precisa ser chamada toda vez que a lista é
+ * re-renderizada, já que os botões antigos são substituídos por novos elementos.
+ */
+function conectarBotoesDeAcao() {
+
+    // Para cada botão "Marcar como lido" encontrado na página...
+    document.querySelectorAll(".btn-marcar-lido").forEach(botao => {
+        botao.addEventListener("click", async () => {
+            const id = botao.dataset.id; // recupera o id guardado no data-id
+            await marcarComoLido(id);
+        });
+    });
+
+    // Para cada botão "Remover" encontrado na página...
+    document.querySelectorAll(".btn-remover").forEach(botao => {
+        botao.addEventListener("click", async () => {
+            const id = botao.dataset.id;
+            await removerLivro(id);
+        });
+    });
+}
+
+/**
+ * Envia uma requisição PUT para /livros/{id}/status, atualizando
+ * o status do livro para "Lido". Depois, recarrega a lista.
+ */
+async function marcarComoLido(id) {
+    try {
+        const resposta = await fetch(`${API_URL}/livros/${id}/status`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "Lido" })
+        });
+
+        if (!resposta.ok) {
+            throw new Error("Falha ao atualizar status");
+        }
+
+        carregarLivros();
+
+    } catch (erro) {
+        console.error("Erro ao marcar como lido:", erro);
+        alert("Não foi possível atualizar o status do livro.");
+    }
+}
+
+/**
+ * Envia uma requisição DELETE para /livros/{id}, removendo o livro.
+ * Depois, recarrega a lista.
+ */
+async function removerLivro(id) {
+    // Confirmação simples antes de remover, para evitar cliques acidentais
+    const confirmar = confirm("Tem certeza que deseja remover este livro?");
+    if (!confirmar) return;
+
+    try {
+        const resposta = await fetch(`${API_URL}/livros/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!resposta.ok) {
+            throw new Error("Falha ao remover livro");
+        }
+
+        carregarLivros();
+
+    } catch (erro) {
+        console.error("Erro ao remover livro:", erro);
+        alert("Não foi possível remover o livro.");
+    }
+}
 
 // ===================== INICIALIZAÇÃO =====================
 
