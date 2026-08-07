@@ -174,9 +174,50 @@ async function removerLivro(id) {
         alert("Não foi possível remover o livro.");
     }
 }
+// ===================== ESTATÍSTICAS =====================
+
+/**
+ * Busca as estatísticas de leitura na API (GET /estatisticas) e
+ * exibe o resumo no painel #painel-estatisticas.
+ */
+async function carregarEstatisticas() {
+    try {
+        const resposta = await fetch(`${API_URL}/estatisticas`);
+        const dados = await resposta.json();
+        renderizarEstatisticas(dados);
+    } catch (erro) {
+        console.error("Erro ao carregar estatísticas:", erro);
+    }
+}
+
+/**
+ * Recebe o objeto de estatísticas (totalLido, porGenero, porStatus)
+ * e monta o HTML de exibição dentro do painel.
+ */
+function renderizarEstatisticas(dados) {
+    const painel = document.getElementById("painel-estatisticas");
+
+    // Transforma o objeto porGenero (ex: {POLITICA: 2, FICCAO: 1})
+    // em uma lista de texto legível: "POLITICA: 2, FICCAO: 1"
+    const generosTexto = Object.entries(dados.porGenero)
+        .map(([genero, qtd]) => `${genero}: ${qtd}`)
+        .join(", ") || "Nenhum";
+
+    const statusTexto = Object.entries(dados.porStatus)
+        .map(([status, qtd]) => `${status}: ${qtd}`)
+        .join(", ") || "Nenhum";
+
+    painel.innerHTML = `
+        <h2>Estatísticas</h2>
+        <p><strong>Total de livros lidos:</strong> ${dados.totalLido}</p>
+        <p><strong>Por gênero:</strong> ${generosTexto}</p>
+        <p><strong>Por status:</strong> ${statusTexto}</p>
+    `;
+}
 
 // ===================== INICIALIZAÇÃO =====================
 
 // Executa a busca de livros assim que o script é carregado,
 // preenchendo a listagem com os dados já existentes na API.
 carregarLivros();
+carregarEstatisticas();
