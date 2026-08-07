@@ -25,9 +25,10 @@ async function carregarLivros() {
 }
 
 /**
- * Recebe a lista de livros (já convertida de JSON para objetos JS) e monta
- * o HTML correspondente dentro da div #lista-livros. Separada de carregarLivros()
- * para manter "buscar dados" e "exibir dados" como responsabilidades distintas.
+ * Recebe a lista de livros e monta o HTML como uma grade de cards.
+ * Cada card recebe uma classe CSS diferente dependendo do status
+ * (lido = destaque verde, quero_ler = neutro), reforçando visualmente
+ * a sensação de "conquista" nos livros já lidos.
  */
 function renderizarLivros(livros) {
     const container = document.getElementById("lista-livros");
@@ -37,28 +38,33 @@ function renderizarLivros(livros) {
         return;
     }
 
-    const html = livros.map(livro => `
-        <div class="livro">
-            <strong>${livro.titulo}</strong> (${livro.autor})<br>
-            Gênero: ${livro.genero} | Status: ${livro.status}
-            <br>
+    const html = livros.map(livro => {
+        const classeStatus = livro.status === "Lido" ? "livro-lido" : "livro-pendente";
 
-            <!-- 
-                data-id guarda o id do livro no próprio botão.
-                Isso permite recuperar qual livro foi clicado, sem precisar
-                de variáveis globais ou índices de lista.
-            -->
-            <button class="btn-marcar-lido" data-id="${livro.id}">Marcar como lido</button>
-            <button class="btn-remover" data-id="${livro.id}">Remover</button>
-        </div>
-    `).join("");
+        const selo = livro.status === "Lido"
+            ? '<span class="selo-lido">&#10003;</span>'
+            : "";
+
+        const statusTexto = livro.status === "Lido" ? "lido" : "quero ler";
+
+        return `
+            <div class="livro-card ${classeStatus}">
+                ${selo}
+                <div class="livro-titulo">${livro.titulo}</div>
+                <div class="livro-info">${livro.autor} · ${livro.genero}</div>
+                <span class="livro-badge">${statusTexto}</span>
+                <div class="livro-acoes">
+                    <button class="btn-marcar-lido" data-id="${livro.id}">Marcar como lido</button>
+                    <button class="btn-remover" data-id="${livro.id}">Remover</button>
+                </div>
+            </div>
+        `;
+    }).join("");
 
     container.innerHTML = html;
-
-    // Depois de inserir o HTML no DOM, conecta os eventos de clique
-    // em todos os botões recém-criados.
     conectarBotoesDeAcao();
 }
+
 
 // ===================== CADASTRO DE NOVO LIVRO =====================
 
@@ -68,10 +74,8 @@ function renderizarLivros(livros) {
  * e recarrega a lista de livros para refletir o novo cadastro.
  */
 document.getElementById("form-cadastro").addEventListener("submit", async (evento) => {
-    evento.preventDefault(); // impede o recarregamento padrão da página ao enviar o form
+    evento.preventDefault();
 
-    // Monta o objeto a ser enviado no corpo da requisição,
-    // lendo os valores digitados/selecionados no formulário
     const novoLivro = {
         titulo: document.getElementById("input-titulo").value,
         autor: document.getElementById("input-autor").value,
@@ -89,17 +93,18 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
             throw new Error("Falha ao cadastrar livro");
         }
 
-        // Limpa os campos do formulário após o cadastro bem-sucedido
         document.getElementById("form-cadastro").reset();
-
-        // Recarrega a lista para exibir o livro recém-cadastrado
         carregarLivros();
+        carregarEstatisticas();
 
     } catch (erro) {
         console.error("Erro ao cadastrar livro:", erro);
         alert("Não foi possível cadastrar o livro. Tente novamente.");
     }
 });
+
+
+// ===================== AÇÕES NOS LIVROS (MARCAR COMO LIDO / REMOVER) =====================
 
 /**
  * Adiciona os event listeners nos botões de "marcar como lido" e "remover"
@@ -108,15 +113,13 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
  */
 function conectarBotoesDeAcao() {
 
-    // Para cada botão "Marcar como lido" encontrado na página...
     document.querySelectorAll(".btn-marcar-lido").forEach(botao => {
         botao.addEventListener("click", async () => {
-            const id = botao.dataset.id; // recupera o id guardado no data-id
+            const id = botao.dataset.id;
             await marcarComoLido(id);
         });
     });
 
-    // Para cada botão "Remover" encontrado na página...
     document.querySelectorAll(".btn-remover").forEach(botao => {
         botao.addEventListener("click", async () => {
             const id = botao.dataset.id;
@@ -127,7 +130,7 @@ function conectarBotoesDeAcao() {
 
 /**
  * Envia uma requisição PUT para /livros/{id}/status, atualizando
- * o status do livro para "Lido". Depois, recarrega a lista.
+ * o status do livro para "Lido". Depois, recarrega a lista e as estatísticas.
  */
 async function marcarComoLido(id) {
     try {
@@ -142,6 +145,7 @@ async function marcarComoLido(id) {
         }
 
         carregarLivros();
+        carregarEstatisticas();
 
     } catch (erro) {
         console.error("Erro ao marcar como lido:", erro);
@@ -151,10 +155,9 @@ async function marcarComoLido(id) {
 
 /**
  * Envia uma requisição DELETE para /livros/{id}, removendo o livro.
- * Depois, recarrega a lista.
+ * Depois, recarrega a lista e as estatísticas.
  */
 async function removerLivro(id) {
-    // Confirmação simples antes de remover, para evitar cliques acidentais
     const confirmar = confirm("Tem certeza que deseja remover este livro?");
     if (!confirmar) return;
 
@@ -168,12 +171,15 @@ async function removerLivro(id) {
         }
 
         carregarLivros();
+        carregarEstatisticas();
 
     } catch (erro) {
         console.error("Erro ao remover livro:", erro);
         alert("Não foi possível remover o livro.");
     }
 }
+
+
 // ===================== ESTATÍSTICAS =====================
 
 /**
@@ -198,10 +204,8 @@ async function carregarEstatisticas() {
 function renderizarEstatisticas(dados) {
     const painel = document.getElementById("painel-estatisticas");
 
-    // Quantidade "na fila" = total de livros com status Quero_ler
     const naFila = dados.porStatus["Quero_ler"] || 0;
 
-    // Lista de gêneros com contagem, formatada como texto legível
     const generosTexto = Object.entries(dados.porGenero)
         .map(([genero, qtd]) => `${genero}: ${qtd}`)
         .join(" · ") || "Nenhum";
@@ -222,9 +226,9 @@ function renderizarEstatisticas(dados) {
     `;
 }
 
+
 // ===================== INICIALIZAÇÃO =====================
 
-// Executa a busca de livros assim que o script é carregado,
-// preenchendo a listagem com os dados já existentes na API.
+// Executa a busca de livros e estatísticas assim que o script é carregado.
 carregarLivros();
 carregarEstatisticas();

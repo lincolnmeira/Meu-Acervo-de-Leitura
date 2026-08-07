@@ -79,3 +79,141 @@ h2 {
     font-size: 0.85rem;
     color: #5F5E5A;
 }
+
+/* ===================== LISTAGEM DE LIVROS (CARDS) ===================== */
+
+/* Grade responsiva: os cards se ajustam automaticamente conforme o espaço */
+#lista-livros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.livro-card {
+    position: relative;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+/* Livro já lido: fundo esverdeado suave, borda verde — sensação de conquista */
+.livro-lido {
+    background-color: #F3F9EC;
+    border: 1.5px solid #07f107;
+}
+
+/* Livro ainda não lido: tom neutro, discreto, "esperando a vez" */
+.livro-pendente {
+    background-color: #F4F2EC;
+    border: 0.5px solid #D3D1C7;
+}
+
+/* Selo de conquista (✓) no canto superior direito dos livros lidos */
+.selo-lido {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #5d921c;
+    color: #fff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.livro-titulo {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    font-weight: 500;
+    padding-right: 20px; /* espaço para não colidir com o selo */
+    margin-bottom: 0.25rem;
+}
+
+.livro-info {
+    font-size: 0.8rem;
+    color: #5F5E5A;
+    margin-bottom: 0.6rem;
+}
+
+/* Badge de status: verde para lido, cinza neutro para quero ler */
+.livro-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+}
+
+.livro-lido .livro-badge {
+    background-color: #639922;
+    color: #fff;
+}
+
+.livro-pendente .livro-badge {
+    background-color: #E5E3DB;
+    color: #5F5E5A;
+}
+
+.livro-acoes {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.livro-acoes button {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #C4B8A0;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.livro-acoes button:hover {
+    background-color: #F0E8D8;
+}
+
+/* ===================== FORMULÁRIO DE CADASTRO ===================== */
+
+#form-cadastro {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap; /* quebra linha em telas menores, sem quebrar o layout */
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #F4EEE0;
+    border-radius: 12px;
+}
+
+#form-cadastro input,
+#form-cadastro select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #D8CBAE;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background-color: #fff;
+}
+
+#form-cadastro input:focus,
+#form-cadastro select:focus {
+    outline: none;
+    border-color: #B08858; /* destaque sutil ao focar no campo */
+}
+
+#form-cadastro button {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #4A1B0C; /* mesmo marrom do título, reforça identidade visual */
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#form-cadastro button:hover {
+    background-color: #6B2E15;
+}
