@@ -1,0 +1,34 @@
+/* ===================== RESET E BASE ===================== */
+/* Remove margens/padding padrão do navegador e usa box-sizing
+   mais previsível em todos os elementos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: #FBF6EE; /* tom papel/creme, como conversamos */
+    color: #2C2C2A;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto; /* centraliza o conteúdo na página */
+}
+
+/* ===================== TÍTULO PRINCIPAL ===================== */
+h1 {
+    font-family: Georgia, 'Times New Roman', serif; /* fonte serifada, remete a livro */
+    font-size: 2rem;
+    font-weight: 500;
+    color: #4A1B0C; /* marrom terroso, combina com o fundo creme */
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-family: Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #4A1B0C;
+    margin-bottom: 0.75rem;
+}
