@@ -1,6 +1,6 @@
-# 📚 Meu Acervo de Leitura
+## 📚 Meu Acervo de Leitura
 
-Sistema pessoal para cadastro e acompanhamento dos livros que já li, estou lendo ou pretendo ler. Gera estatísticas de leitura por gênero e status, além de um log de atividades a cada ação realizada.
+Sistema pessoal para cadastro e acompanhamento dos livros que já li, estou lendo ou pretendo ler. Gera estatísticas de leitura por gênero e status, além de um log de atividades a cada ação realizada. Possui API REST própria e uma interface web para gerenciar o acervo visualmente.
 
 ## 🎯 Objetivo
 
@@ -10,7 +10,7 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 - Marcar livros como lidos, atualizando estatísticas automaticamente
 - Visualizar quantos livros já foram lidos, por gênero
 - Gerar um log automático de todas as ações realizadas
-- Consumir os dados via API REST (JSON)
+- Gerenciar tudo por uma interface web simples, consumindo a API REST
 
 ## 🚀 Funcionalidades
 
@@ -22,7 +22,7 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 - [x] Persistência de dados em JSON
 - [x] Menu interativo via terminal
 - [x] API REST (Javalin)
-- [ ] Dashboard front-end
+- [x] Front-end web (HTML/CSS/JS) consumindo a API
 
 ## 🛠️ Tecnologias
 
@@ -30,7 +30,7 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 - **Maven** (gerenciamento de dependências e build)
 - **Gson** (serialização/persistência em JSON)
 - **Javalin** (API REST)
-- HTML, CSS e JavaScript (front-end — em desenvolvimento)
+- **HTML, CSS e JavaScript puro** (front-end)
 
 ## 📁 Estrutura do Projeto
 
@@ -38,6 +38,10 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 Meu-Acervo-de-Leitura/
 ├── docs/
 │   └── diagrama-uml.png
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
 ├── src/
 │   ├── main/java/acervo/
 │   │   ├── api/            # Endpoints da API REST (Javalin)
@@ -69,18 +73,23 @@ git clone git@github.com:lincolnmeira/Meu-Acervo-de-Leitura.git
 cd Meu-Acervo-de-Leitura
 \`\`\`
 
-### Rodar o menu interativo (terminal)
+### Opção 1: Menu interativo via terminal
 \`\`\`bash
 mvn clean compile
 mvn exec:java -Dexec.mainClass="acervo.Main"
 \`\`\`
 
-### Rodar a API REST
+### Opção 2: API REST + interface web
+
+**1. Suba a API:**
 \`\`\`bash
 mvn clean compile
 mvn exec:java -Dexec.mainClass="acervo.api.ApiServer"
 \`\`\`
 O servidor sobe em \`http://localhost:7000\`.
+
+**2. Abra o front-end:**
+Com a API rodando, abra o arquivo \`frontend/index.html\` diretamente no navegador (duplo clique, ou usando a extensão Live Server do VSCode).
 
 ## 🔌 Endpoints da API
 
@@ -101,17 +110,20 @@ O servidor sobe em \`http://localhost:7000\`.
 }
 \`\`\`
 
+## 🖥️ Interface
+
+A interface web permite cadastrar, visualizar, marcar como lido e remover livros, além de acompanhar estatísticas de leitura em tempo real. Livros lidos recebem destaque visual (selo verde), reforçando a sensação de progresso a cada leitura concluída.
+
+![Tela principal](docs/screenshot-principal.png)
+
 ## 🔧 Melhorias Futuras
 
-- [ ] Validação de entrada mais robusta na API — atualmente, se o campo `genero` enviado no `POST /livros` não corresponder exatamente (case-sensitive) a uma constante do enum `Genero`, o campo fica silenciosamente `null` em vez de retornar um erro claro. Próximo passo: validar a entrada e responder com `400 Bad Request` e mensagem explicativa quando o gênero for inválido.
+- [ ] Validação de entrada mais robusta na API — atualmente, se o campo `genero` enviado no `POST /livros` não corresponder exatamente (case-sensitive) a uma constante do enum `Genero`, o campo fica silenciosamente `null` em vez de retornar um erro claro. No front-end isso já é mitigado com um `<select>` de opções fixas, mas a API em si ainda não valida. Próximo passo: validar a entrada e responder com `400 Bad Request` quando o gênero for inválido.
+- [ ] Estatísticas por mês/ano, com metas pessoais de leitura
+- [ ] Gráfico de leitura anual e percentual de livros lidos por gênero
 - [ ] Testes automatizados (JUnit)
 - [ ] Autenticação na API
-- [ ] Dashboard front-end (HTML/CSS/JS) consumindo a API REST
-- [ ] Deploy da API (Render/Railway)
-
-## 📸 Prints
-
-*(adicionar screenshots do dashboard aqui quando estiver pronto)*
+- [ ] Deploy da API e do front-end (Render/Railway/Vercel)
 
 ## 📝 Licença
 
