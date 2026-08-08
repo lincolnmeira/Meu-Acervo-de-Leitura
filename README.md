@@ -34,7 +34,7 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 
 ## 📁 Estrutura do Projeto
 
-\`\`\`
+```
 Meu-Acervo-de-Leitura/
 ├── docs/
 │   ├── diagrama-uml.png
@@ -56,7 +56,7 @@ Meu-Acervo-de-Leitura/
 ├── .gitignore
 ├── pom.xml
 └── README.md
-\`\`\`
+```
 ## 📐 Diagrama UML
 
 [Diagrama UML](docs/diagrama-uml.png)
