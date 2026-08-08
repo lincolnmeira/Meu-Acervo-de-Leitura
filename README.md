@@ -59,7 +59,7 @@ Meu-Acervo-de-Leitura/
 \`\`\`
 ## 📐 Diagrama UML
 
-![Diagrama UML](docs/diagrama-uml.png)
+[Diagrama UML](docs/diagrama-uml.png)
 
 ## ▶️ Como executar
 
