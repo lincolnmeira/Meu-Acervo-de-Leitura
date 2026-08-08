@@ -114,7 +114,7 @@ Com a API rodando, abra o arquivo \`frontend/index.html\` diretamente no navegad
 
 A interface web permite cadastrar, visualizar, marcar como lido e remover livros, além de acompanhar estatísticas de leitura em tempo real. Livros lidos recebem destaque visual (selo verde), reforçando a sensação de progresso a cada leitura concluída.
 
-![Tela principal](docs/screenshot-principal.png)
+[Tela principal](docs/screenshot-principal.png)
 
 ## 🔧 Melhorias Futuras
 
