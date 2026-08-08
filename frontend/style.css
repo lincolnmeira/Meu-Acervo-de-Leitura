@@ -217,3 +217,39 @@ h2 {
 #form-cadastro button:hover {
     background-color: #6B2E15;
 }
+
+/* ===================== POLIMENTO GERAL ===================== */
+
+/* Linha divisória estilizada, combinando com a paleta */
+hr {
+    border: none;
+    border-top: 1px solid #E3D9C6;
+    margin: 2rem 0;
+}
+
+/* Espaçamento extra abaixo do título principal */
+h1 {
+    margin-bottom: 0.25rem;
+}
+
+/* Subtítulo opcional, discreto, logo abaixo do H1 */
+.subtitulo {
+    font-size: 0.9rem;
+    color: #8A8578;
+    margin-bottom: 2rem;
+}
+
+/* Efeito sutil de elevação ao passar o mouse sobre um card */
+.livro-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.livro-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 27, 12, 0.08);
+}
+
+/* Espaçamento extra antes da seção "Meus livros" */
+#lista-livros {
+    margin-top: 0.5rem;
+}
