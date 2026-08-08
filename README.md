@@ -37,7 +37,8 @@ Diferente de um sistema de biblioteca tradicional (empréstimo/devolução para 
 \`\`\`
 Meu-Acervo-de-Leitura/
 ├── docs/
-│   └── diagrama-uml.png
+│   ├── diagrama-uml.png
+│   └── frontendmeuacervodeleitura.png
 ├── frontend/
 │   ├── index.html
 │   ├── style.css
@@ -45,7 +46,7 @@ Meu-Acervo-de-Leitura/
 ├── src/
 │   ├── main/java/acervo/
 │   │   ├── api/            # Endpoints da API REST (Javalin)
-│   │   ├── log/            # Registro de atividades
+│   │   ├── log/             # Registro de atividades
 │   │   ├── model/          # Classes de domínio (Livro, Genero, StatusLeitura)
 │   │   ├── service/        # Regras de negócio e persistência
 │   │   └── Main.java       # Menu interativo via terminal
@@ -56,7 +57,6 @@ Meu-Acervo-de-Leitura/
 ├── pom.xml
 └── README.md
 \`\`\`
-
 ## 📐 Diagrama UML
 
 ![Diagrama UML](docs/diagrama-uml.png)
