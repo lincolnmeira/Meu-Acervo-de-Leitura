@@ -55,6 +55,40 @@ public class ApiServer {
             ctx.result(gson.toJson(livros));
         });
 
+        // ===== [GET] /estatisticas/mes-ano -> retorna total de livros lidos em um mês/ano específicos =====
+// Exemplo de uso: GET /estatisticas/mes-ano?mes=8&ano=2026
+app.get("/estatisticas/mes-ano", ctx -> {
+    var livros = acervoService.getLivros();
+
+    // Lê os parâmetros da URL (query params), com valores padrão caso não sejam enviados
+    String mesParam = ctx.queryParam("mes");
+    String anoParam = ctx.queryParam("ano");
+
+    if (mesParam == null || anoParam == null) {
+        ctx.status(400);
+        ctx.result("Parâmetros 'mes' e 'ano' são obrigatórios. Exemplo: /estatisticas/mes-ano?mes=8&ano=2026");
+        return;
+    }
+
+    try {
+        int mes = Integer.parseInt(mesParam);
+        int ano = Integer.parseInt(anoParam);
+
+        var resposta = new java.util.HashMap<String, Object>();
+        resposta.put("mes", mes);
+        resposta.put("ano", ano);
+        resposta.put("totalLidoNoMes", estatisticasService.totalLidoNoMes(livros, mes, ano));
+        resposta.put("totalLidoNoAno", estatisticasService.totalLidoNoAno(livros, ano));
+
+        ctx.contentType("application/json");
+        ctx.result(gson.toJson(resposta));
+
+    } catch (NumberFormatException e) {
+        ctx.status(400);
+        ctx.result("Os parâmetros 'mes' e 'ano' devem ser números.");
+    }
+});
+
         // ===== [POST] /livros -> cadastra um novo livro =====
         app.post("/livros", ctx -> {
             // NovoLivroRequest recebe apenas os dados de entrada (titulo, autor, genero).
@@ -114,21 +148,21 @@ public class ApiServer {
             ctx.status(204); // 204 = "No Content" - sucesso, mas sem corpo de resposta (padrão para DELETE)
         });
 
-        // ===== [GET] /estatisticas -> retorna estatísticas de leitura (por gênero, por
-        // status, total lido) =====
-        app.get("/estatisticas", ctx -> {
-            var livros = acervoService.getLivros();
+        // ===== [GET] /estatisticas -> retorna estatísticas de leitura (por gênero, por status, total lido, % por gênero) =====
+app.get("/estatisticas", ctx -> {
+    var livros = acervoService.getLivros();
 
-            var resposta = new java.util.HashMap<String, Object>();
-            resposta.put("totalLido", estatisticasService.totalLido(livros));
-            resposta.put("porGenero", estatisticasService.contarPorGenero(livros));
-            resposta.put("porStatus", estatisticasService.contarPorStatus(livros));
+    var resposta = new java.util.HashMap<String, Object>();
+    resposta.put("totalLido", estatisticasService.totalLido(livros));
+    resposta.put("porGenero", estatisticasService.contarPorGenero(livros));
+    resposta.put("porStatus", estatisticasService.contarPorStatus(livros));
+    resposta.put("porcentagemPorGenero", estatisticasService.porcentagemGeneroEntreLidos(livros));
 
-            ctx.contentType("application/json");
-            ctx.result(gson.toJson(resposta));
-        });
-    }
+    ctx.contentType("application/json");
+    ctx.result(gson.toJson(resposta));
+});
 
+ }
     /**
      * Inicia o servidor na porta informada.
      */
