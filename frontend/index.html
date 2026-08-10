@@ -58,7 +58,31 @@
         <p>Carregando estatísticas...</p>
     </section>
 
-    <hr>
+    
+
+    <!-- Consulta de livros lidos por mês/ano específico -->
+<div id="consulta-mes-ano">
+    <label for="select-mes">Ver lidos em:</label>
+    <select id="select-mes">
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8" selected>Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+    </select>
+    <input type="number" id="input-ano" value="2026" min="2000" max="2100" style="width: 80px;">
+    <button id="btn-consultar-mes-ano">Consultar</button>
+    <p id="resultado-mes-ano"></p>
+</div>
+
+<hr>
 
     <!-- ===================== LISTAGEM DE LIVROS ===================== -->
     <!-- 

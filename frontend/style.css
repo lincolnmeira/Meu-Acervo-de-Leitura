@@ -253,3 +253,31 @@ h1 {
 #lista-livros {
     margin-top: 0.5rem;
 }
+
+.stats-porcentagem {
+    font-size: 0.85rem;
+    color: #4A1B0C;
+    margin-top: 0.5rem;
+}
+
+#consulta-mes-ano {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #E3D9C6;
+    font-size: 0.85rem;
+}
+
+#consulta-mes-ano select,
+#consulta-mes-ano input,
+#consulta-mes-ano button {
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #D8CBAE;
+    margin-right: 0.4rem;
+}
+
+#resultado-mes-ano {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: #4A1B0C;
+}

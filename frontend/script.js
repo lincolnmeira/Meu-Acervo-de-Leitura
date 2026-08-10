@@ -197,9 +197,8 @@ async function carregarEstatisticas() {
 }
 
 /**
- * Recebe o objeto de estatísticas (totalLido, porGenero, porStatus)
- * e monta o HTML de exibição dentro do painel, no formato de
- * destaques numéricos (total lidos / na fila) seguido de detalhes por gênero.
+ * Recebe o objeto de estatísticas (totalLido, porGenero, porStatus,
+ * porcentagemPorGenero) e monta o HTML de exibição dentro do painel.
  */
 function renderizarEstatisticas(dados) {
     const painel = document.getElementById("painel-estatisticas");
@@ -209,6 +208,12 @@ function renderizarEstatisticas(dados) {
     const generosTexto = Object.entries(dados.porGenero)
         .map(([genero, qtd]) => `${genero}: ${qtd}`)
         .join(" · ") || "Nenhum";
+
+    // Monta o texto de porcentagem por gênero, arredondando para 1 casa decimal
+    // (o back-end envia o valor "cru", com muitas casas decimais)
+    const porcentagensTexto = Object.entries(dados.porcentagemPorGenero)
+        .map(([genero, pct]) => `${genero}: ${pct.toFixed(1)}%`)
+        .join(" · ") || "Nenhum livro lido ainda";
 
     painel.innerHTML = `
         <h2>Minha estante</h2>
@@ -223,9 +228,38 @@ function renderizarEstatisticas(dados) {
             </div>
         </div>
         <p class="stats-generos">${generosTexto}</p>
+        <p class="stats-porcentagem"><strong>Seu perfil de leitura:</strong> ${porcentagensTexto}</p>
     `;
 }
 
+/**
+ * Captura o clique no botão de consulta por mês/ano, busca os dados
+ * na API (GET /estatisticas/mes-ano) e exibe o resultado na tela.
+ */
+document.getElementById("btn-consultar-mes-ano").addEventListener("click", async () => {
+    const mes = document.getElementById("select-mes").value;
+    const ano = document.getElementById("input-ano").value;
+
+    const resultadoEl = document.getElementById("resultado-mes-ano");
+
+    try {
+        const resposta = await fetch(`${API_URL}/estatisticas/mes-ano?mes=${mes}&ano=${ano}`);
+
+        if (!resposta.ok) {
+            throw new Error("Falha ao consultar estatísticas");
+        }
+
+        const dados = await resposta.json();
+
+        resultadoEl.textContent =
+            `Você leu ${dados.totalLidoNoMes} livro(s) em ${mes}/${ano}, ` +
+            `e ${dados.totalLidoNoAno} no ano de ${ano} inteiro.`;
+
+    } catch (erro) {
+        console.error("Erro ao consultar mês/ano:", erro);
+        resultadoEl.textContent = "Não foi possível consultar as estatísticas.";
+    }
+});
 
 // ===================== INICIALIZAÇÃO =====================
 
