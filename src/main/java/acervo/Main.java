@@ -18,22 +18,13 @@ public class Main {
 
     // ===================== ATRIBUTOS =====================
 
-    // Scanner compartilhado para ler as entradas do usuário no terminal
     private static Scanner scanner = new Scanner(System.in);
-
-    // Serviço responsável por gerenciar o acervo (adicionar, remover, listar livros)
     private static AcervoService acervoService = new AcervoService();
-
-    // Serviço responsável por calcular estatísticas de leitura (contagens, totais)
     private static EstatisticasService estatisticasService = new EstatisticasService();
 
 
     // ===================== MÉTODO PRINCIPAL =====================
 
-    /**
-     * Ponto de entrada do programa.
-     * Mantém o menu em loop até o usuário escolher sair (opção 0).
-     */
     public static void main(String[] args) {
         boolean continuar = true;
 
@@ -41,7 +32,6 @@ public class Main {
             exibirMenu();
             int opcao = lerOpcao();
 
-            // Direciona para o método correspondente à opção escolhida
             switch (opcao) {
                 case 1 -> cadastrarLivro();
                 case 2 -> listarLivros();
@@ -49,6 +39,7 @@ public class Main {
                 case 4 -> removerLivro();
                 case 5 -> verEstatisticas();
                 case 6 -> verHistoricoAtividades();
+                case 7 -> verPorcentagemPorGenero(); // <<< ADICIONADO
                 case 0 -> {
                     System.out.println("\nAté a próxima leitura!");
                     continuar = false;
@@ -63,9 +54,6 @@ public class Main {
 
     // ===================== MENU PADRÃO =====================
 
-    /**
-     * Exibe as opções do menu principal no terminal.
-     */
     private static void exibirMenu() {
         System.out.println("\n========================================");
         System.out.println("          MEU ACERVO DE LEITURA");
@@ -76,15 +64,11 @@ public class Main {
         System.out.println("4 - Remover livro");
         System.out.println("5 - Ver estatísticas");
         System.out.println("6 - Ver histórico de atividades");
+        System.out.println("7 - Ver porcentagem por gênero (dos livros lidos)"); // <<< ADICIONADO
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
     }
 
-    /**
-     * Lê a opção digitada pelo usuário e converte para número.
-     * Retorna -1 caso o usuário digite algo que não seja um número válido,
-     * evitando que o programa quebre com uma exceção.
-     */
     private static int lerOpcao() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
@@ -96,10 +80,6 @@ public class Main {
 
     // ===================== MÉTODO PARA CADASTRAR LIVRO =====================
 
-    /**
-     * Coleta os dados de um novo livro (título, autor, gênero) e
-     * delega o cadastro ao AcervoService.
-     */
     private static void cadastrarLivro() {
         System.out.println("\n--- Cadastrar novo livro ---");
 
@@ -110,18 +90,13 @@ public class Main {
         String autor = scanner.nextLine().trim();
 
         Genero genero = escolherGenero();
-        if (genero == null) return; // cadastro cancelado por entrada inválida
+        if (genero == null) return;
 
         Livro livro = new Livro(titulo, autor, genero);
         acervoService.adicionarLivro(livro);
         System.out.println("[OK] Livro cadastrado com sucesso!");
     }
 
-    /**
-     * Exibe a lista de gêneros disponíveis (enum Genero) numerada,
-     * e retorna o gênero escolhido pelo usuário.
-     * Retorna null se a escolha for inválida.
-     */
     private static Genero escolherGenero() {
         Genero[] generos = Genero.values();
 
@@ -147,10 +122,6 @@ public class Main {
 
     // ===================== MÉTODO PARA LISTAR LIVROS =====================
 
-    /**
-     * Lista todos os livros cadastrados, numerados, com título,
-     * autor, gênero e status de leitura.
-     */
     private static void listarLivros() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -170,10 +141,6 @@ public class Main {
 
     // ===================== MÉTODO PARA MARCAR COMO LIDO =====================
 
-    /**
-     * Exibe a lista de livros, pede ao usuário qual deseja marcar como lido,
-     * e atualiza o status através do AcervoService.
-     */
     private static void marcarComoLido() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -195,10 +162,6 @@ public class Main {
 
     // ===================== MÉTODO PARA REMOVER LIVRO =====================
 
-    /**
-     * Exibe a lista de livros, pede ao usuário qual deseja remover,
-     * e delega a remoção ao AcervoService.
-     */
     private static void removerLivro() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -217,11 +180,6 @@ public class Main {
         System.out.println("[OK] Livro removido!");
     }
 
-    /**
-     * Método auxiliar reutilizado por marcarComoLido() e removerLivro().
-     * Lê o número digitado pelo usuário e retorna o Livro correspondente
-     * na lista, ou null se a entrada for inválida.
-     */
     private static Livro selecionarLivro(List<Livro> livros) {
         try {
             int indice = Integer.parseInt(scanner.nextLine().trim()) - 1;
@@ -239,10 +197,6 @@ public class Main {
 
     // ===================== MÉTODO PARA VER ESTATÍSTICAS =====================
 
-    /**
-     * Exibe estatísticas de leitura: total de livros lidos,
-     * contagem por gênero e contagem por status.
-     */
     private static void verEstatisticas() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -255,12 +209,32 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA VER HISTÓRICO =====================
+    // ===================== MÉTODO PARA VER PORCENTAGEM POR GÊNERO ===================== <<< ADICIONADO (seção inteira)
 
     /**
-     * Exibe o histórico de atividades registradas pelo LogService
-     * (cadastros, remoções e atualizações de status).
+     * Exibe, para cada gênero, a porcentagem que ele representa
+     * dentro do total de livros já lidos.
      */
+    private static void verPorcentagemPorGenero() {
+        List<Livro> livros = acervoService.getLivros();
+
+        System.out.println("\n--- Porcentagem por gênero (entre os livros lidos) ---");
+
+        var porcentagens = estatisticasService.porcentagemGeneroEntreLidos(livros);
+
+        if (porcentagens.isEmpty()) {
+            System.out.println("Nenhum livro lido ainda.");
+            return;
+        }
+
+        for (var entrada : porcentagens.entrySet()) {
+            System.out.printf("%s: %.1f%%%n", entrada.getKey(), entrada.getValue());
+        }
+    }
+
+
+    // ===================== MÉTODO PARA VER HISTÓRICO =====================
+
     private static void verHistoricoAtividades() {
         System.out.println("\n--- Histórico de atividades ---");
         List<acervo.log.RegistroAtividade> historico = acervoService.getHistoricoAtividades();

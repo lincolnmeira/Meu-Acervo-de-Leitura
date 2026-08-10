@@ -43,4 +43,43 @@ public class EstatisticasService {
 
         return total;
     }
+
+    /**
+     * Calcula, para cada gênero, qual porcentagem ele representa dentro
+     * do total de livros já lidos (não do total geral cadastrado).
+     * Exemplo: se você leu 10 livros no total, e 3 são de Economia,
+     * o resultado para Economia é 30.0 (30%).
+     *
+     * Essa métrica reflete o perfil real de leitura da pessoa, já que
+     * o denominador é sempre o total de livros efetivamente lidos —
+     * cadastrar livros sem ler não influencia o resultado.
+     */
+    public Map<Genero, Double> porcentagemGeneroEntreLidos(List<Livro> livros) {
+        int totalLidos = totalLido(livros);
+
+        // Conta quantos livros LIDOS existem, por gênero
+        Map<Genero, Integer> lidosPorGenero = new HashMap<>();
+        for (Livro livro : livros) {
+            if (livro.getStatus() == StatusLeitura.Lido) {
+                Genero genero = livro.getGenero();
+                lidosPorGenero.put(genero, lidosPorGenero.getOrDefault(genero, 0) + 1);
+            }
+        }
+
+        // Calcula a porcentagem de cada gênero sobre o total de lidos
+        Map<Genero, Double> porcentagens = new HashMap<>();
+
+        // Evita divisão por zero caso ainda não haja nenhum livro lido
+        if (totalLidos == 0) {
+            return porcentagens;
+        }
+
+        for (Genero genero : lidosPorGenero.keySet()) {
+            int lidosDoGenero = lidosPorGenero.get(genero);
+            double porcentagem = (lidosDoGenero * 100.0) / totalLidos;
+            porcentagens.put(genero, porcentagem);
+        }
+
+        return porcentagens;
+    }
 }
