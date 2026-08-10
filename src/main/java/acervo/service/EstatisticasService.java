@@ -82,4 +82,45 @@ public class EstatisticasService {
 
         return porcentagens;
     }
+
+
+/**
+ * Conta quantos livros foram concluídos (status Lido) em um determinado
+ * mês e ano, com base na dataConclusao de cada livro.
+ * Exemplo: totalLidoNoMes(livros, 8, 2026) retorna quantos livros
+ * foram lidos em agosto de 2026.
+ */
+public int totalLidoNoMes(List<Livro> livros, int mes, int ano) {
+    int total = 0;
+
+    for (Livro livro : livros) {
+        if (livro.getStatus() == StatusLeitura.Lido && livro.getDataConclusao() != null) {
+            if (livro.getDataConclusao().getMonthValue() == mes
+                    && livro.getDataConclusao().getYear() == ano) {
+                total++;
+            }
+        }
+    }
+
+    return total;
+}
+
+/**
+ * Conta quantos livros foram concluídos (status Lido) em um determinado
+ * ano, com base na dataConclusao de cada livro.
+ */
+public int totalLidoNoAno(List<Livro> livros, int ano) {
+    int total = 0;
+
+    for (Livro livro : livros) {
+        if (livro.getStatus() == StatusLeitura.Lido && livro.getDataConclusao() != null) {
+            if (livro.getDataConclusao().getYear() == ano) {
+                total++;
+            }
+        }
+    }
+
+    return total;
+}
+
 }

@@ -39,7 +39,8 @@ public class Main {
                 case 4 -> removerLivro();
                 case 5 -> verEstatisticas();
                 case 6 -> verHistoricoAtividades();
-                case 7 -> verPorcentagemPorGenero(); // <<< ADICIONADO
+                case 7 -> verPorcentagemPorGenero(); 
+                case 8 -> verLidosPorMesAno();
                 case 0 -> {
                     System.out.println("\nAté a próxima leitura!");
                     continuar = false;
@@ -64,7 +65,8 @@ public class Main {
         System.out.println("4 - Remover livro");
         System.out.println("5 - Ver estatísticas");
         System.out.println("6 - Ver histórico de atividades");
-        System.out.println("7 - Ver porcentagem por gênero (dos livros lidos)"); // <<< ADICIONADO
+        System.out.println("7 - Ver porcentagem por gênero (dos livros lidos)");
+        System.out.println("8 - Ver livros lidos por mês/ano");
         System.out.println("0 - Sair");
         System.out.print("Escolha uma opção: ");
     }
@@ -248,4 +250,46 @@ public class Main {
             System.out.println(registro);
         }
     }
+
+// ===================== MÉTODO PARA VER LIDOS POR MÊS/ANO =====================
+
+/**
+ * Pergunta ao usuário o mês e o ano desejados, e exibe quantos livros
+ * foram lidos nesse período (mês específico) e no ano inteiro.
+ */
+private static void verLidosPorMesAno() {
+    List<Livro> livros = acervoService.getLivros();
+
+    System.out.print("\nDigite o ano (ex: 2026): ");
+    int ano = lerInteiro();
+    if (ano == -1) return;
+
+    System.out.print("Digite o mês (1-12): ");
+    int mes = lerInteiro();
+    if (mes == -1 || mes < 1 || mes > 12) {
+        System.out.println("[!] Mês inválido.");
+        return;
+    }
+
+    int totalNoMes = estatisticasService.totalLidoNoMes(livros, mes, ano);
+    int totalNoAno = estatisticasService.totalLidoNoAno(livros, ano);
+
+    System.out.println("\n--- Livros lidos ---");
+    System.out.println("No mês " + mes + "/" + ano + ": " + totalNoMes);
+    System.out.println("No ano " + ano + ": " + totalNoAno);
+}
+
+/**
+ * Método auxiliar para ler um número inteiro do terminal.
+ * Retorna -1 caso a entrada não seja um número válido.
+ */
+private static int lerInteiro() {
+    try {
+        return Integer.parseInt(scanner.nextLine().trim());
+    } catch (NumberFormatException e) {
+        System.out.println("[!] Entrada inválida.");
+        return -1;
+    }
+}
+
 }
