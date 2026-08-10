@@ -90,20 +90,39 @@ app.get("/estatisticas/mes-ano", ctx -> {
 });
 
         // ===== [POST] /livros -> cadastra um novo livro =====
-        app.post("/livros", ctx -> {
-            // NovoLivroRequest recebe apenas os dados de entrada (titulo, autor, genero).
-            // O objeto Livro "de verdade" é criado a partir do construtor da classe,
-            // garantindo que id, status inicial e data de cadastro sejam preenchidos
-            // corretamente.
-            NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+app.post("/livros", ctx -> {
+    NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
 
-            Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
-            acervoService.adicionarLivro(novoLivro);
+    // Validação: título e autor não podem estar vazios
+    if (dados.titulo == null || dados.titulo.isBlank()) {
+        ctx.status(400);
+        ctx.result("O campo 'titulo' é obrigatório.");
+        return;
+    }
 
-            ctx.contentType("application/json");
-            ctx.status(201); // 201 = "Created", código HTTP padrão para criação bem-sucedida
-            ctx.result(gson.toJson(novoLivro));
-        });
+    if (dados.autor == null || dados.autor.isBlank()) {
+        ctx.status(400);
+        ctx.result("O campo 'autor' é obrigatório.");
+        return;
+    }
+
+    // Validação: o gênero enviado precisa corresponder a uma constante válida do enum.
+    // Sem essa checagem, um valor incorreto (ex: "politica" em vez de "POLITICA")
+    // faz o Gson deixar o campo silenciosamente null, sem avisar o cliente da API.
+    if (dados.genero == null) {
+        String generosValidos = java.util.Arrays.toString(acervo.model.Genero.values());
+        ctx.status(400);
+        ctx.result("Gênero inválido ou não informado. Valores aceitos: " + generosValidos);
+        return;
+    }
+
+    Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
+    acervoService.adicionarLivro(novoLivro);
+
+    ctx.contentType("application/json");
+    ctx.status(201);
+    ctx.result(gson.toJson(novoLivro));
+});
 
         // ===== [PUT] /livros/{id}/status -> atualiza o status de leitura de um livro
         // =====
