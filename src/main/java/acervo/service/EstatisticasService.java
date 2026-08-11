@@ -10,6 +10,7 @@ import acervo.model.StatusLeitura;
 
 public class EstatisticasService {
 
+    // Conta quantos livros existem por gênero (todos os status)
     public Map<Genero, Integer> contarPorGenero(List<Livro> livros) {
         Map<Genero, Integer> contagem = new HashMap<>();
 
@@ -21,6 +22,7 @@ public class EstatisticasService {
         return contagem;
     }
 
+    // Conta quantos livros existem por status (LIDO /  QUERO_LER)
     public Map<StatusLeitura, Integer> contarPorStatus(List<Livro> livros) {
         Map<StatusLeitura, Integer> contagem = new HashMap<>();
 
@@ -32,11 +34,12 @@ public class EstatisticasService {
         return contagem;
     }
 
+    // Total de livros com status LIDO
     public int totalLido(List<Livro> livros) {
         int total = 0;
 
         for (Livro livro : livros) {
-            if (livro.getStatus() == StatusLeitura.Lido) {
+            if (livro.getStatus() == StatusLeitura.LIDO) {
                 total++;
             }
         }
@@ -45,31 +48,26 @@ public class EstatisticasService {
     }
 
     /**
-     * Calcula, para cada gênero, qual porcentagem ele representa dentro
-     * do total de livros já lidos (não do total geral cadastrado).
-     * Exemplo: se você leu 10 livros no total, e 3 são de Economia,
-     * o resultado para Economia é 30.0 (30%).
-     *
-     * Essa métrica reflete o perfil real de leitura da pessoa, já que
-     * o denominador é sempre o total de livros efetivamente lidos —
-     * cadastrar livros sem ler não influencia o resultado.
+     * Para cada gênero, calcula sua porcentagem sobre o TOTAL DE LIVROS LIDOS
+     * (não sobre o total cadastrado). Ex: 10 lidos, 3 de Economia -> 30%.
+     * Denominador fixo em "lidos" evita que a métrica seja manipulável
+     * só cadastrando livros sem ler.
      */
     public Map<Genero, Double> porcentagemGeneroEntreLidos(List<Livro> livros) {
         int totalLidos = totalLido(livros);
 
-        // Conta quantos livros LIDOS existem, por gênero
+        // Conta lidos por gênero
         Map<Genero, Integer> lidosPorGenero = new HashMap<>();
         for (Livro livro : livros) {
-            if (livro.getStatus() == StatusLeitura.Lido) {
+            if (livro.getStatus() == StatusLeitura.LIDO) {
                 Genero genero = livro.getGenero();
                 lidosPorGenero.put(genero, lidosPorGenero.getOrDefault(genero, 0) + 1);
             }
         }
 
-        // Calcula a porcentagem de cada gênero sobre o total de lidos
         Map<Genero, Double> porcentagens = new HashMap<>();
 
-        // Evita divisão por zero caso ainda não haja nenhum livro lido
+        // Evita divisão por zero se ainda não há nenhum livro lido
         if (totalLidos == 0) {
             return porcentagens;
         }
@@ -83,44 +81,34 @@ public class EstatisticasService {
         return porcentagens;
     }
 
+    // Total de livros lidos em um mês/ano específicos (usa dataConclusao)
+    public int totalLidoNoMes(List<Livro> livros, int mes, int ano) {
+        int total = 0;
 
-/**
- * Conta quantos livros foram concluídos (status Lido) em um determinado
- * mês e ano, com base na dataConclusao de cada livro.
- * Exemplo: totalLidoNoMes(livros, 8, 2026) retorna quantos livros
- * foram lidos em agosto de 2026.
- */
-public int totalLidoNoMes(List<Livro> livros, int mes, int ano) {
-    int total = 0;
-
-    for (Livro livro : livros) {
-        if (livro.getStatus() == StatusLeitura.Lido && livro.getDataConclusao() != null) {
-            if (livro.getDataConclusao().getMonthValue() == mes
-                    && livro.getDataConclusao().getYear() == ano) {
-                total++;
+        for (Livro livro : livros) {
+            if (livro.getStatus() == StatusLeitura.LIDO && livro.getDataConclusao() != null) {
+                if (livro.getDataConclusao().getMonthValue() == mes
+                        && livro.getDataConclusao().getYear() == ano) {
+                    total++;
+                }
             }
         }
+
+        return total;
     }
 
-    return total;
-}
+    // Total de livros lidos em um ano específico (usa dataConclusao)
+    public int totalLidoNoAno(List<Livro> livros, int ano) {
+        int total = 0;
 
-/**
- * Conta quantos livros foram concluídos (status Lido) em um determinado
- * ano, com base na dataConclusao de cada livro.
- */
-public int totalLidoNoAno(List<Livro> livros, int ano) {
-    int total = 0;
-
-    for (Livro livro : livros) {
-        if (livro.getStatus() == StatusLeitura.Lido && livro.getDataConclusao() != null) {
-            if (livro.getDataConclusao().getYear() == ano) {
-                total++;
+        for (Livro livro : livros) {
+            if (livro.getStatus() == StatusLeitura.LIDO && livro.getDataConclusao() != null) {
+                if (livro.getDataConclusao().getYear() == ano) {
+                    total++;
+                }
             }
         }
+
+        return total;
     }
-
-    return total;
-}
-
 }

@@ -11,20 +11,16 @@ import acervo.service.EstatisticasService;
 
 /**
  * Classe principal do sistema.
- * Responsável por exibir o menu interativo no terminal e
- * direcionar as ações do usuário para os serviços correspondentes.
  */
 public class Main {
 
-    // ===================== ATRIBUTOS =====================
-
+    // ===== ATRIBUTOS =====
     private static Scanner scanner = new Scanner(System.in);
     private static AcervoService acervoService = new AcervoService();
     private static EstatisticasService estatisticasService = new EstatisticasService();
 
 
-    // ===================== MÉTODO PRINCIPAL =====================
-
+    // ===== MÉTODO PRINCIPAL =====
     public static void main(String[] args) {
         boolean continuar = true;
 
@@ -39,7 +35,7 @@ public class Main {
                 case 4 -> removerLivro();
                 case 5 -> verEstatisticas();
                 case 6 -> verHistoricoAtividades();
-                case 7 -> verPorcentagemPorGenero(); 
+                case 7 -> verPorcentagemPorGenero();
                 case 8 -> verLidosPorMesAno();
                 case 0 -> {
                     System.out.println("\nAté a próxima leitura!");
@@ -53,8 +49,7 @@ public class Main {
     }
 
 
-    // ===================== MENU PADRÃO =====================
-
+    // ===== MENU PADRÃO =====
     private static void exibirMenu() {
         System.out.println("\n========================================");
         System.out.println("          MEU ACERVO DE LEITURA");
@@ -71,6 +66,7 @@ public class Main {
         System.out.print("Escolha uma opção: ");
     }
 
+    // Retorna -1 se a entrada não for um número válido
     private static int lerOpcao() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
@@ -80,8 +76,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA CADASTRAR LIVRO =====================
-
+    // ===== CADASTRAR LIVRO =====
     private static void cadastrarLivro() {
         System.out.println("\n--- Cadastrar novo livro ---");
 
@@ -97,8 +92,12 @@ public class Main {
         Livro livro = new Livro(titulo, autor, genero);
         acervoService.adicionarLivro(livro);
         System.out.println("[OK] Livro cadastrado com sucesso!");
+        // OBS: se o título já existir, AcervoService recusa silenciosamente
+        // (só imprime aviso no console) — essa mensagem de sucesso aparece
+        // mesmo assim. Ajustar quando adicionarLivro() passar a retornar status.
     }
 
+    // Lista os gêneros numerados e retorna o escolhido (ou null se inválido)
     private static Genero escolherGenero() {
         Genero[] generos = Genero.values();
 
@@ -122,8 +121,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA LISTAR LIVROS =====================
-
+    // ===== LISTAR LIVROS =====
     private static void listarLivros() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -141,8 +139,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA MARCAR COMO LIDO =====================
-
+    // ===== MARCAR COMO LIDO =====
     private static void marcarComoLido() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -157,13 +154,12 @@ public class Main {
         Livro livro = selecionarLivro(livros);
         if (livro == null) return;
 
-        acervoService.atualizarStatus(livro, StatusLeitura.Lido);
+        acervoService.atualizarStatus(livro, StatusLeitura.LIDO);
         System.out.println("[OK] Livro marcado como lido!");
     }
 
 
-    // ===================== MÉTODO PARA REMOVER LIVRO =====================
-
+    // ===== REMOVER LIVRO =====
     private static void removerLivro() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -182,6 +178,7 @@ public class Main {
         System.out.println("[OK] Livro removido!");
     }
 
+    // Reaproveitado por marcarComoLido() e removerLivro()
     private static Livro selecionarLivro(List<Livro> livros) {
         try {
             int indice = Integer.parseInt(scanner.nextLine().trim()) - 1;
@@ -197,8 +194,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA VER ESTATÍSTICAS =====================
-
+    // ===== ESTATÍSTICAS =====
     private static void verEstatisticas() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -211,12 +207,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA VER PORCENTAGEM POR GÊNERO ===================== <<< ADICIONADO (seção inteira)
-
-    /**
-     * Exibe, para cada gênero, a porcentagem que ele representa
-     * dentro do total de livros já lidos.
-     */
+    // ===== PORCENTAGEM POR GÊNERO (ENTRE OS LIDOS) =====
     private static void verPorcentagemPorGenero() {
         List<Livro> livros = acervoService.getLivros();
 
@@ -235,8 +226,7 @@ public class Main {
     }
 
 
-    // ===================== MÉTODO PARA VER HISTÓRICO =====================
-
+    // ===== HISTÓRICO DE ATIVIDADES =====
     private static void verHistoricoAtividades() {
         System.out.println("\n--- Histórico de atividades ---");
         List<acervo.log.RegistroAtividade> historico = acervoService.getHistoricoAtividades();
@@ -251,45 +241,37 @@ public class Main {
         }
     }
 
-// ===================== MÉTODO PARA VER LIDOS POR MÊS/ANO =====================
 
-/**
- * Pergunta ao usuário o mês e o ano desejados, e exibe quantos livros
- * foram lidos nesse período (mês específico) e no ano inteiro.
- */
-private static void verLidosPorMesAno() {
-    List<Livro> livros = acervoService.getLivros();
+    // ===== LIDOS POR MÊS/ANO =====
+    private static void verLidosPorMesAno() {
+        List<Livro> livros = acervoService.getLivros();
 
-    System.out.print("\nDigite o ano (ex: 2026): ");
-    int ano = lerInteiro();
-    if (ano == -1) return;
+        System.out.print("\nDigite o ano (ex: 2026): ");
+        int ano = lerInteiro();
+        if (ano == -1) return;
 
-    System.out.print("Digite o mês (1-12): ");
-    int mes = lerInteiro();
-    if (mes == -1 || mes < 1 || mes > 12) {
-        System.out.println("[!] Mês inválido.");
-        return;
+        System.out.print("Digite o mês (1-12): ");
+        int mes = lerInteiro();
+        if (mes == -1 || mes < 1 || mes > 12) {
+            System.out.println("[!] Mês inválido.");
+            return;
+        }
+
+        int totalNoMes = estatisticasService.totalLidoNoMes(livros, mes, ano);
+        int totalNoAno = estatisticasService.totalLidoNoAno(livros, ano);
+
+        System.out.println("\n--- Livros lidos ---");
+        System.out.println("No mês " + mes + "/" + ano + ": " + totalNoMes);
+        System.out.println("No ano " + ano + ": " + totalNoAno);
     }
 
-    int totalNoMes = estatisticasService.totalLidoNoMes(livros, mes, ano);
-    int totalNoAno = estatisticasService.totalLidoNoAno(livros, ano);
-
-    System.out.println("\n--- Livros lidos ---");
-    System.out.println("No mês " + mes + "/" + ano + ": " + totalNoMes);
-    System.out.println("No ano " + ano + ": " + totalNoAno);
-}
-
-/**
- * Método auxiliar para ler um número inteiro do terminal.
- * Retorna -1 caso a entrada não seja um número válido.
- */
-private static int lerInteiro() {
-    try {
-        return Integer.parseInt(scanner.nextLine().trim());
-    } catch (NumberFormatException e) {
-        System.out.println("[!] Entrada inválida.");
-        return -1;
+    // Reaproveitado por verLidosPorMesAno()
+    private static int lerInteiro() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("[!] Entrada inválida.");
+            return -1;
+        }
     }
-}
-
 }

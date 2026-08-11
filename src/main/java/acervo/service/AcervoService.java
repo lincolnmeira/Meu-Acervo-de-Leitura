@@ -1,6 +1,6 @@
 package acervo.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,27 +9,47 @@ import acervo.model.Genero;
 import acervo.model.Livro;
 import acervo.model.StatusLeitura;
 
+/**
+ * Service: orquestra o acervo de livros — adicionar, remover, atualizar
+ * status e listar. Toda alteração é persistida via ArquivoJsonService
+ * e registrada via LogService.
+ */
 public class AcervoService {
 
     private List<Livro> livros;
     private LogService logService;
     private ArquivoJsonService arquivoJsonService;
 
+    // Carrega os livros salvos ao iniciar (lista vazia se não houver arquivo ainda)
     public AcervoService() {
         this.arquivoJsonService = new ArquivoJsonService();
-        this.livros = arquivoJsonService.carregar();  // carrega os dados salvos ao iniciar
+        this.livros = arquivoJsonService.carregar();
         this.logService = new LogService();
     }
 
+    /**
+     * Adiciona um livro, mas apenas se não existir outro com o mesmo título
+     * já cadastrado (comparação sem diferenciar maiúsculas/minúsculas).
+     * Se for duplicata, o cadastro é recusado e nada é salvo/registrado.
+     */
     public void adicionarLivro(Livro livro) {
+        boolean jaExiste = livros.stream()
+                .anyMatch(l -> l.getTitulo().equalsIgnoreCase(livro.getTitulo()));
+
+        if (jaExiste) {
+            System.out.println("[!] Livro já cadastrado: " + livro.getTitulo());
+            return;
+        }
+
         livros.add(livro);
-        arquivoJsonService.salvar(livros);  // persiste após a mudança
+        arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "ADICIONAR_LIVRO",
                 "Livro adicionado: " + livro.getTitulo()
         ));
     }
 
+    // Remove um livro, persiste e registra no log
     public void removerLivro(Livro livro) {
         livros.remove(livro);
         arquivoJsonService.salvar(livros);
@@ -39,11 +59,12 @@ public class AcervoService {
         ));
     }
 
+    // Atualiza o status; se virar LIDO, marca a dataConclusao automaticamente
     public void atualizarStatus(Livro livro, StatusLeitura status) {
         livro.setStatus(status);
 
-        if (status == StatusLeitura.Lido) {
-            livro.setDataConclusao(java.time.LocalDate.now());
+        if (status == StatusLeitura.LIDO) {
+            livro.setDataConclusao(LocalDate.now());
         }
 
         arquivoJsonService.salvar(livros);
@@ -53,6 +74,7 @@ public class AcervoService {
         ));
     }
 
+    // Filtra os livros de um gênero específico
     public List<Livro> listarPorGenero(Genero genero) {
         return livros.stream()
                 .filter(l -> l.getGenero() == genero)
