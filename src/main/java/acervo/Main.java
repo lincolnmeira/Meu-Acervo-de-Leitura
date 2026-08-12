@@ -19,7 +19,6 @@ public class Main {
     private static AcervoService acervoService = new AcervoService();
     private static EstatisticasService estatisticasService = new EstatisticasService();
 
-
     // ===== MÉTODO PRINCIPAL =====
     public static void main(String[] args) {
         boolean continuar = true;
@@ -48,7 +47,6 @@ public class Main {
         scanner.close();
     }
 
-
     // ===== MENU PADRÃO =====
     private static void exibirMenu() {
         System.out.println("\n========================================");
@@ -75,9 +73,9 @@ public class Main {
         }
     }
 
-
     // ===== CADASTRAR LIVRO =====
     private static void cadastrarLivro() {
+
         System.out.println("\n--- Cadastrar novo livro ---");
 
         System.out.print("Título: ");
@@ -87,11 +85,17 @@ public class Main {
         String autor = scanner.nextLine().trim();
 
         Genero genero = escolherGenero();
-        if (genero == null) return;
+        if (genero == null)
+            return;
 
         Livro livro = new Livro(titulo, autor, genero);
-        acervoService.adicionarLivro(livro);
-        System.out.println("[OK] Livro cadastrado com sucesso!");
+        boolean adicionado = acervoService.adicionarLivro(livro);
+
+        if (adicionado) {
+            System.out.println("[OK] Livro cadastrado com sucesso!");
+        } else {
+            System.out.println("[!] Livro já cadastrado: " + titulo);
+        }
         // OBS: se o título já existir, AcervoService recusa silenciosamente
         // (só imprime aviso no console) — essa mensagem de sucesso aparece
         // mesmo assim. Ajustar quando adicionarLivro() passar a retornar status.
@@ -120,7 +124,6 @@ public class Main {
         }
     }
 
-
     // ===== LISTAR LIVROS =====
     private static void listarLivros() {
         List<Livro> livros = acervoService.getLivros();
@@ -138,7 +141,6 @@ public class Main {
         }
     }
 
-
     // ===== MARCAR COMO LIDO =====
     private static void marcarComoLido() {
         List<Livro> livros = acervoService.getLivros();
@@ -152,12 +154,12 @@ public class Main {
         System.out.print("\nDigite o número do livro que deseja marcar como lido: ");
 
         Livro livro = selecionarLivro(livros);
-        if (livro == null) return;
+        if (livro == null)
+            return;
 
         acervoService.atualizarStatus(livro, StatusLeitura.LIDO);
         System.out.println("[OK] Livro marcado como lido!");
     }
-
 
     // ===== REMOVER LIVRO =====
     private static void removerLivro() {
@@ -172,7 +174,8 @@ public class Main {
         System.out.print("\nDigite o número do livro que deseja remover: ");
 
         Livro livro = selecionarLivro(livros);
-        if (livro == null) return;
+        if (livro == null)
+            return;
 
         acervoService.removerLivro(livro);
         System.out.println("[OK] Livro removido!");
@@ -193,7 +196,6 @@ public class Main {
         }
     }
 
-
     // ===== ESTATÍSTICAS =====
     private static void verEstatisticas() {
         List<Livro> livros = acervoService.getLivros();
@@ -205,7 +207,6 @@ public class Main {
         System.out.println("\nPor status:");
         System.out.println(estatisticasService.contarPorStatus(livros));
     }
-
 
     // ===== PORCENTAGEM POR GÊNERO (ENTRE OS LIDOS) =====
     private static void verPorcentagemPorGenero() {
@@ -225,7 +226,6 @@ public class Main {
         }
     }
 
-
     // ===== HISTÓRICO DE ATIVIDADES =====
     private static void verHistoricoAtividades() {
         System.out.println("\n--- Histórico de atividades ---");
@@ -241,14 +241,14 @@ public class Main {
         }
     }
 
-
     // ===== LIDOS POR MÊS/ANO =====
     private static void verLidosPorMesAno() {
         List<Livro> livros = acervoService.getLivros();
 
         System.out.print("\nDigite o ano (ex: 2026): ");
         int ano = lerInteiro();
-        if (ano == -1) return;
+        if (ano == -1)
+            return;
 
         System.out.print("Digite o mês (1-12): ");
         int mes = lerInteiro();

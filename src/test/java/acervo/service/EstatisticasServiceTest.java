@@ -50,9 +50,9 @@ public class EstatisticasServiceTest {
     public void totalLidoDeveContarApenasLivrosComStatusLido() {
         // Arrange: monta uma lista com 2 livros lidos e 1 "quero ler"
         List<Livro> livros = new ArrayList<>();
-        livros.add(criarLivro("Livro A", Genero.FICCAO, StatusLeitura.Lido));
-        livros.add(criarLivro("Livro B", Genero.ROMANCE, StatusLeitura.Lido));
-        livros.add(criarLivro("Livro C", Genero.POLITICA, StatusLeitura.Quero_ler));
+        livros.add(criarLivro("Livro A", Genero.FICCAO, StatusLeitura.LIDO));
+        livros.add(criarLivro("Livro B", Genero.ROMANCE, StatusLeitura.LIDO));
+        livros.add(criarLivro("Livro C", Genero.POLITICA, StatusLeitura.QUERO_LER));
 
         // Act: chama o método que estamos testando
         int resultado = estatisticasService.totalLido(livros);
@@ -73,9 +73,9 @@ public class EstatisticasServiceTest {
     @Test
     public void contarPorGeneroDeveAgruparCorretamente() {
         List<Livro> livros = new ArrayList<>();
-        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.Lido));
-        livros.add(criarLivro("Livro B", Genero.ECONOMIA, StatusLeitura.Quero_ler));
-        livros.add(criarLivro("Livro C", Genero.FICCAO, StatusLeitura.Lido));
+        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.LIDO));
+        livros.add(criarLivro("Livro B", Genero.ECONOMIA, StatusLeitura.QUERO_LER));
+        livros.add(criarLivro("Livro C", Genero.FICCAO, StatusLeitura.LIDO));
 
         Map<Genero, Integer> resultado = estatisticasService.contarPorGenero(livros);
 
@@ -86,15 +86,15 @@ public class EstatisticasServiceTest {
 
     @Test
     public void porcentagemGeneroEntreLidosDeveCalcularCorretamente() {
-        
+
         List<Livro> livros = new ArrayList<>();
-        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.Lido));
-        livros.add(criarLivro("Livro B", Genero.ECONOMIA, StatusLeitura.Lido));
-        livros.add(criarLivro("Livro C", Genero.FICCAO, StatusLeitura.Lido));
+        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.LIDO));
+        livros.add(criarLivro("Livro B", Genero.ECONOMIA, StatusLeitura.LIDO));
+        livros.add(criarLivro("Livro C", Genero.FICCAO, StatusLeitura.LIDO));
 
         Map<Genero, Double> resultado = estatisticasService.porcentagemGeneroEntreLidos(livros);
 
-        // assertEquals com "delta" (0.01) porque estamos comparando números
+        // assertEquals com "delta" (0.5) porque estamos comparando números
         // decimais (double), que podem ter pequenas imprecisões de arredondamento
         assertEquals(66.67, resultado.get(Genero.ECONOMIA), 0.5);
         assertEquals(33.33, resultado.get(Genero.FICCAO), 0.5);
@@ -103,7 +103,7 @@ public class EstatisticasServiceTest {
     @Test
     public void porcentagemGeneroEntreLidosComNenhumLivroLidoDeveRetornarMapaVazio() {
         List<Livro> livros = new ArrayList<>();
-        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.Quero_ler));
+        livros.add(criarLivro("Livro A", Genero.ECONOMIA, StatusLeitura.QUERO_LER));
 
         Map<Genero, Double> resultado = estatisticasService.porcentagemGeneroEntreLidos(livros);
 
@@ -112,10 +112,10 @@ public class EstatisticasServiceTest {
 
     @Test
     public void totalLidoNoMesDeveContarApenasLivrosDoMesEAnoCorretos() {
-        Livro livroAgosto = criarLivro("Livro Agosto", Genero.FICCAO, StatusLeitura.Lido);
+        Livro livroAgosto = criarLivro("Livro Agosto", Genero.FICCAO, StatusLeitura.LIDO);
         livroAgosto.setDataConclusao(LocalDate.of(2026, 8, 15));
 
-        Livro livroSetembro = criarLivro("Livro Setembro", Genero.FICCAO, StatusLeitura.Lido);
+        Livro livroSetembro = criarLivro("Livro Setembro", Genero.FICCAO, StatusLeitura.LIDO);
         livroSetembro.setDataConclusao(LocalDate.of(2026, 9, 1));
 
         List<Livro> livros = new ArrayList<>();

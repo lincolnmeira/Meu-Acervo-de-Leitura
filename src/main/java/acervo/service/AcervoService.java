@@ -30,23 +30,22 @@ public class AcervoService {
     /**
      * Adiciona um livro, mas apenas se não existir outro com o mesmo título
      * já cadastrado (comparação sem diferenciar maiúsculas/minúsculas).
-     * Se for duplicata, o cadastro é recusado e nada é salvo/registrado.
+     * Retorna true se o livro foi adicionado, false se era duplicata.
      */
-    public void adicionarLivro(Livro livro) {
+    public boolean adicionarLivro(Livro livro) {
         boolean jaExiste = livros.stream()
                 .anyMatch(l -> l.getTitulo().equalsIgnoreCase(livro.getTitulo()));
 
         if (jaExiste) {
-            System.out.println("[!] Livro já cadastrado: " + livro.getTitulo());
-            return;
+            return false;
         }
 
         livros.add(livro);
         arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "ADICIONAR_LIVRO",
-                "Livro adicionado: " + livro.getTitulo()
-        ));
+                "Livro adicionado: " + livro.getTitulo()));
+        return true;
     }
 
     // Remove um livro, persiste e registra no log
@@ -55,8 +54,7 @@ public class AcervoService {
         arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "REMOVER_LIVRO",
-                "Livro removido: " + livro.getTitulo()
-        ));
+                "Livro removido: " + livro.getTitulo()));
     }
 
     // Atualiza o status; se virar LIDO, marca a dataConclusao automaticamente
@@ -70,8 +68,7 @@ public class AcervoService {
         arquivoJsonService.salvar(livros);
         logService.registrarAcao(new RegistroAtividade(
                 "ATUALIZAR_STATUS",
-                "Livro '" + livro.getTitulo() + "' -> status: " + status
-        ));
+                "Livro '" + livro.getTitulo() + "' -> status: " + status));
     }
 
     // Filtra os livros de um gênero específico

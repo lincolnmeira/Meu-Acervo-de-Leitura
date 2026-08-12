@@ -1,6 +1,8 @@
 package acervo.api;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,8 +10,10 @@ import com.google.gson.GsonBuilder;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import acervo.model.Genero;
 import acervo.model.Livro;
 import acervo.service.AcervoService;
+import acervo.service.EstatisticasService;
 import acervo.service.LocalDateAdapter;
 
 /**
@@ -21,11 +25,11 @@ public class ApiServer {
     private final Javalin app;
     private final AcervoService acervoService;
     private final Gson gson;
-    private final acervo.service.EstatisticasService estatisticasService;
+    private final EstatisticasService estatisticasService;
 
     public ApiServer() {
         this.acervoService = new AcervoService();
-        this.estatisticasService = new acervo.service.EstatisticasService();
+        this.estatisticasService = new EstatisticasService();
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -78,7 +82,7 @@ public class ApiServer {
                 int mes = Integer.parseInt(mesParam);
                 int ano = Integer.parseInt(anoParam);
 
-                var resposta = new java.util.HashMap<String, Object>();
+                var resposta = new HashMap<String, Object>();
                 resposta.put("mes", mes);
                 resposta.put("ano", ano);
                 resposta.put("totalLidoNoMes", estatisticasService.totalLidoNoMes(livros, mes, ano));
@@ -107,13 +111,18 @@ public class ApiServer {
             }
 
             if (dados.genero == null) {
-                String generosValidos = java.util.Arrays.toString(acervo.model.Genero.values());
+                String generosValidos = Arrays.toString(Genero.values());
                 enviarErro(ctx, 400, "Gênero inválido ou não informado. Valores aceitos: " + generosValidos);
                 return;
             }
 
             Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
-            acervoService.adicionarLivro(novoLivro);
+            boolean adicionado = acervoService.adicionarLivro(novoLivro);
+
+            if (!adicionado) {
+                enviarErro(ctx, 409, "Já existe um livro cadastrado com o título '" + dados.titulo + "'.");
+                return;
+            }
 
             ctx.contentType("application/json");
             ctx.status(201);
@@ -163,7 +172,7 @@ public class ApiServer {
         app.get("/estatisticas", ctx -> {
             var livros = acervoService.getLivros();
 
-            var resposta = new java.util.HashMap<String, Object>();
+            var resposta = new HashMap<String, Object>();
             resposta.put("totalLido", estatisticasService.totalLido(livros));
             resposta.put("porGenero", estatisticasService.contarPorGenero(livros));
             resposta.put("porStatus", estatisticasService.contarPorStatus(livros));

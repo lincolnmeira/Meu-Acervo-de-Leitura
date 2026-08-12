@@ -1,10 +1,9 @@
 package acervo.api;
 
 /**
- * Representa o formato padrão de resposta de erro da API.
- * Usada em todos os endpoints para manter consistência: toda resposta
- * de erro (400, 404, etc.) retorna um JSON com esse formato, em vez
- * de texto puro.
+ * DTO: formato padrão de erro da API. Toda resposta de erro (400, 404,
+ * 409, etc.) usa esse formato, mantendo consistência com o restante
+ * das respostas em JSON.
  */
 public class ErroResponse {
     public String erro;

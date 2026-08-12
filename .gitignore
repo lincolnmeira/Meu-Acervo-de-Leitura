@@ -23,5 +23,8 @@
 hs_err_pid*
 replay_pid*
 
+# Dados gerados em runtime pelo ArquivoJsonService (livros.json) - cada execução gera os próprios dados
 data/
+
+# Saída de build do Maven (.class compilados, etc.) - gerada automaticamente por "mvn compile"
 target/

@@ -27,7 +27,7 @@ async function carregarLivros() {
 /**
  * Recebe a lista de livros e monta o HTML como uma grade de cards.
  * Cada card recebe uma classe CSS diferente dependendo do status
- * (lido = destaque verde, quero_ler = neutro), reforçando visualmente
+ * (LIDO = destaque verde, QUERO_LER = neutro), reforçando visualmente
  * a sensação de "conquista" nos livros já lidos.
  */
 function renderizarLivros(livros) {
@@ -39,13 +39,13 @@ function renderizarLivros(livros) {
     }
 
     const html = livros.map(livro => {
-        const classeStatus = livro.status === "Lido" ? "livro-lido" : "livro-pendente";
+        const classeStatus = livro.status === "LIDO" ? "livro-lido" : "livro-pendente";
 
-        const selo = livro.status === "Lido"
+        const selo = livro.status === "LIDO"
             ? '<span class="selo-lido">&#10003;</span>'
             : "";
 
-        const statusTexto = livro.status === "Lido" ? "lido" : "quero ler";
+        const statusTexto = livro.status === "LIDO" ? "lido" : "quero ler";
 
         return `
             <div class="livro-card ${classeStatus}">
@@ -90,7 +90,10 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
         });
 
         if (!resposta.ok) {
-            throw new Error("Falha ao cadastrar livro");
+            // Lê a mensagem de erro específica que a API retorna
+            // (ex: "Já existe um livro cadastrado com o título ...")
+            const erroBody = await resposta.json();
+            throw new Error(erroBody.erro || "Falha ao cadastrar livro");
         }
 
         document.getElementById("form-cadastro").reset();
@@ -99,7 +102,7 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
 
     } catch (erro) {
         console.error("Erro ao cadastrar livro:", erro);
-        alert("Não foi possível cadastrar o livro. Tente novamente.");
+        alert(erro.message);
     }
 });
 
@@ -130,14 +133,14 @@ function conectarBotoesDeAcao() {
 
 /**
  * Envia uma requisição PUT para /livros/{id}/status, atualizando
- * o status do livro para "Lido". Depois, recarrega a lista e as estatísticas.
+ * o status do livro para "LIDO". Depois, recarrega a lista e as estatísticas.
  */
 async function marcarComoLido(id) {
     try {
         const resposta = await fetch(`${API_URL}/livros/${id}/status`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "Lido" })
+            body: JSON.stringify({ status: "LIDO" })
         });
 
         if (!resposta.ok) {
@@ -203,7 +206,7 @@ async function carregarEstatisticas() {
 function renderizarEstatisticas(dados) {
     const painel = document.getElementById("painel-estatisticas");
 
-    const naFila = dados.porStatus["Quero_ler"] || 0;
+    const naFila = dados.porStatus["QUERO_LER"] || 0;
 
     const generosTexto = Object.entries(dados.porGenero)
         .map(([genero, qtd]) => `${genero}: ${qtd}`)
@@ -260,6 +263,7 @@ document.getElementById("btn-consultar-mes-ano").addEventListener("click", async
         resultadoEl.textContent = "Não foi possível consultar as estatísticas.";
     }
 });
+
 
 // ===================== INICIALIZAÇÃO =====================
 

@@ -11,94 +11,81 @@
 
     <h1>Meu Acervo de Leitura</h1>
     <p class="subtitulo">Cada livro lido é uma conquista. Registre a sua.</p>
-    <!-- ===================== FORMULÁRIO DE CADASTRO ===================== -->
-    <!-- 
-        Formulário para cadastrar um novo livro.
-        O evento de "submit" é capturado no script.js, que envia os dados
-        para a API via POST /livros, sem recarregar a página.
-    -->
+
+    <!-- ===== FORMULÁRIO DE CADASTRO ===== -->
+    <!-- Submit capturado em script.js, envia via POST /livros sem recarregar a página -->
     <section>
         <h2>Cadastrar novo livro</h2>
         <form id="form-cadastro">
 
-            <!-- Campo de texto livre para o título do livro -->
             <input type="text" id="input-titulo" placeholder="Título" required>
-
-            <!-- Campo de texto livre para o autor -->
             <input type="text" id="input-autor" placeholder="Autor" required>
 
             <!-- 
-                Select (lista fixa) para o gênero, em vez de campo de texto livre.
-                Isso evita erros de digitação, já que o back-end (enum Genero)
-                exige correspondência exata entre o texto e as constantes do enum.
+                Select fixo em vez de texto livre: evita erro de digitação,
+                já que a API exige correspondência exata com o enum Genero.
+                Ao adicionar um gênero novo no enum, adicionar aqui também.
             -->
             <select id="input-genero" required>
                 <option value="">Selecione o gênero</option>
+                 <option value="AUTO_AJUDA">Auto-ajuda</option>
+                <option value="BIOGRAFIA">Biografia</option>
+                <option value="CLASSICO">Clássico</option>
                 <option value="POLITICA">Política</option>
                 <option value="ECONOMIA">Economia</option>
-                <option value="FINACAS">Finanças</option>
+                <option value="FILOSOFIA">Filosofia</option>
+                <option value="FINANCAS">Finanças</option>
                 <option value="FICCAO">Ficção</option>
                 <option value="ROMANCE">Romance</option>
                 <option value="AUTO_AJUDA">Auto-ajuda</option>
                 <option value="TECNOLOGIA">Tecnologia</option>
-                <option value="CIENCIAS_EXATAS">Ciências Exatas</option>
+                <option value="HISTORIA">História</option>
             </select>
 
             <button type="submit">Cadastrar</button>
         </form>
     </section>
 
-    <!-- ===================== PAINEL DE ESTATÍSTICAS ===================== -->
-    <!-- 
-    Exibe um resumo das estatísticas de leitura, buscado via GET /estatisticas.
-    Preenchido dinamicamente pela função carregarEstatisticas() no script.js.
--->
+    <!-- ===== PAINEL DE ESTATÍSTICAS ===== -->
+    <!-- Preenchido via GET /estatisticas, por carregarEstatisticas() no script.js -->
     <section id="painel-estatisticas">
         <h2>Estatísticas</h2>
         <p>Carregando estatísticas...</p>
     </section>
 
-    
+    <!-- ===== CONSULTA DE LIDOS POR MÊS/ANO ===== -->
+    <!-- Botão consulta GET /estatisticas/mes-ano?mes=X&ano=Y, ver script.js -->
+    <div id="consulta-mes-ano">
+        <label for="select-mes">Ver lidos em:</label>
+        <select id="select-mes">
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8" selected>Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+        </select>
+        <input type="number" id="input-ano" value="2026" min="2000" max="2100" style="width: 80px;">
+        <button id="btn-consultar-mes-ano">Consultar</button>
+        <p id="resultado-mes-ano"></p>
+    </div>
 
-    <!-- Consulta de livros lidos por mês/ano específico -->
-<div id="consulta-mes-ano">
-    <label for="select-mes">Ver lidos em:</label>
-    <select id="select-mes">
-        <option value="1">Janeiro</option>
-        <option value="2">Fevereiro</option>
-        <option value="3">Março</option>
-        <option value="4">Abril</option>
-        <option value="5">Maio</option>
-        <option value="6">Junho</option>
-        <option value="7">Julho</option>
-        <option value="8" selected>Agosto</option>
-        <option value="9">Setembro</option>
-        <option value="10">Outubro</option>
-        <option value="11">Novembro</option>
-        <option value="12">Dezembro</option>
-    </select>
-    <input type="number" id="input-ano" value="2026" min="2000" max="2100" style="width: 80px;">
-    <button id="btn-consultar-mes-ano">Consultar</button>
-    <p id="resultado-mes-ano"></p>
-</div>
+    <hr>
 
-<hr>
-
-    <!-- ===================== LISTAGEM DE LIVROS ===================== -->
-    <!-- 
-        Container onde a lista de livros é renderizada dinamicamente pelo JS.
-        O conteúdo inicial ("Carregando livros...") é substituído assim que
-        a resposta da API chega (ver função renderizarLivros no script.js).
-    -->
+    <!-- ===== LISTAGEM DE LIVROS ===== -->
+    <!-- Renderizado dinamicamente por renderizarLivros() no script.js -->
     <h2>Meus livros</h2>
     <div id="lista-livros">
         <p>Carregando livros...</p>
     </div>
 
-    <!-- 
-        Script carregado no final do <body> para garantir que todo o HTML
-        acima já exista no DOM antes do JS tentar acessar esses elementos.
-    -->
+    <!-- Script no final do body: garante que o HTML acima já exista no DOM -->
     <script src="script.js"></script>
 </body>
 
