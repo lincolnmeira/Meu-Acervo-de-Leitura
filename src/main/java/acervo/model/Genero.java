@@ -21,5 +21,7 @@ public enum Genero {
     POESIA,
     TERROR,
     FANTASIA,
-    AUTOBIOGRAFIA
+    AUTOBIOGRAFIA,
+    RELIGIOSO,
+    MASCULINISTA
 }
