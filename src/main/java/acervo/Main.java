@@ -89,7 +89,13 @@ public class Main {
             return;
 
         Livro livro = new Livro(titulo, autor, genero);
-        boolean adicionado = acervoService.adicionarLivro(livro);
+        boolean adicionado;
+        try {
+            adicionado = acervoService.adicionarLivro(livro);
+        } catch (IllegalStateException e) {
+            System.out.println("[!] Não foi possível salvar o livro. Verifique o acesso à pasta data.");
+            return;
+        }
 
         if (adicionado) {
             System.out.println("[OK] Livro cadastrado com sucesso!");
@@ -157,7 +163,12 @@ public class Main {
         if (livro == null)
             return;
 
-        acervoService.atualizarStatus(livro, StatusLeitura.LIDO);
+        try {
+            acervoService.atualizarStatus(livro, StatusLeitura.LIDO);
+        } catch (IllegalStateException e) {
+            System.out.println("[!] Não foi possível salvar a alteração. Verifique o acesso à pasta data.");
+            return;
+        }
         System.out.println("[OK] Livro marcado como lido!");
     }
 
@@ -177,7 +188,12 @@ public class Main {
         if (livro == null)
             return;
 
-        acervoService.removerLivro(livro);
+        try {
+            acervoService.removerLivro(livro);
+        } catch (IllegalStateException e) {
+            System.out.println("[!] Não foi possível salvar a remoção. Verifique o acesso à pasta data.");
+            return;
+        }
         System.out.println("[OK] Livro removido!");
     }
 

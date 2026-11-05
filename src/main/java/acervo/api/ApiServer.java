@@ -81,6 +81,10 @@ public class ApiServer {
             try {
                 int mes = Integer.parseInt(mesParam);
                 int ano = Integer.parseInt(anoParam);
+                if (mes < 1 || mes > 12 || ano < 1) {
+                    enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                    return;
+                }
 
                 var resposta = new HashMap<String, Object>();
                 resposta.put("mes", mes);
@@ -98,7 +102,17 @@ public class ApiServer {
 
         // ===== [POST] /livros -> cadastra um novo livro =====
         app.post("/livros", ctx -> {
-            NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+            NovoLivroRequest dados;
+            try {
+                dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+            } catch (RuntimeException e) {
+                enviarErro(ctx, 400, "Corpo JSON inválido.");
+                return;
+            }
+            if (dados == null) {
+                enviarErro(ctx, 400, "Corpo JSON obrigatório.");
+                return;
+            }
 
             if (dados.titulo == null || dados.titulo.isBlank()) {
                 enviarErro(ctx, 400, "O campo 'titulo' é obrigatório.");
@@ -117,7 +131,13 @@ public class ApiServer {
             }
 
             Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
-            boolean adicionado = acervoService.adicionarLivro(novoLivro);
+            boolean adicionado;
+            try {
+                adicionado = acervoService.adicionarLivro(novoLivro);
+            } catch (IllegalStateException e) {
+                enviarErro(ctx, 500, "Não foi possível salvar o livro. Tente novamente.");
+                return;
+            }
 
             if (!adicionado) {
                 enviarErro(ctx, 409, "Já existe um livro cadastrado com o título '" + dados.titulo + "'.");
@@ -143,8 +163,23 @@ public class ApiServer {
                 return;
             }
 
-            AtualizarStatusRequest dados = gson.fromJson(ctx.body(), AtualizarStatusRequest.class);
-            acervoService.atualizarStatus(livro, dados.status);
+            AtualizarStatusRequest dados;
+            try {
+                dados = gson.fromJson(ctx.body(), AtualizarStatusRequest.class);
+            } catch (RuntimeException e) {
+                enviarErro(ctx, 400, "Corpo JSON inválido.");
+                return;
+            }
+            if (dados == null || dados.status == null) {
+                enviarErro(ctx, 400, "O campo 'status' é obrigatório e deve ser válido.");
+                return;
+            }
+            try {
+                acervoService.atualizarStatus(livro, dados.status);
+            } catch (IllegalStateException e) {
+                enviarErro(ctx, 500, "Não foi possível salvar a alteração. Tente novamente.");
+                return;
+            }
 
             ctx.contentType("application/json");
             ctx.result(gson.toJson(livro));
@@ -164,7 +199,12 @@ public class ApiServer {
                 return;
             }
 
-            acervoService.removerLivro(livro);
+            try {
+                acervoService.removerLivro(livro);
+            } catch (IllegalStateException e) {
+                enviarErro(ctx, 500, "Não foi possível salvar a remoção. Tente novamente.");
+                return;
+            }
             ctx.status(204);
         });
 

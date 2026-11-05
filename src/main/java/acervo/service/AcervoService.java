@@ -2,6 +2,8 @@ package acervo.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import acervo.log.RegistroAtividade;
@@ -41,7 +43,12 @@ public class AcervoService {
         }
 
         livros.add(livro);
-        arquivoJsonService.salvar(livros);
+        try {
+            arquivoJsonService.salvar(livros);
+        } catch (RuntimeException e) {
+            livros.remove(livro);
+            throw e;
+        }
         logService.registrarAcao(new RegistroAtividade(
                 "ADICIONAR_LIVRO",
                 "Livro adicionado: " + livro.getTitulo()));
@@ -50,8 +57,15 @@ public class AcervoService {
 
     // Remove um livro, persiste e registra no log
     public void removerLivro(Livro livro) {
-        livros.remove(livro);
-        arquivoJsonService.salvar(livros);
+        int indice = livros.indexOf(livro);
+        if (indice < 0) return;
+        livros.remove(indice);
+        try {
+            arquivoJsonService.salvar(livros);
+        } catch (RuntimeException e) {
+            livros.add(indice, livro);
+            throw e;
+        }
         logService.registrarAcao(new RegistroAtividade(
                 "REMOVER_LIVRO",
                 "Livro removido: " + livro.getTitulo()));
@@ -59,13 +73,20 @@ public class AcervoService {
 
     // Atualiza o status; se virar LIDO, marca a dataConclusao automaticamente
     public void atualizarStatus(Livro livro, StatusLeitura status) {
-        livro.setStatus(status);
-
-        if (status == StatusLeitura.LIDO) {
-            livro.setDataConclusao(LocalDate.now());
+        if (livro == null || status == null || !livros.contains(livro)) {
+            throw new IllegalArgumentException("Livro e status válidos são obrigatórios.");
         }
-
-        arquivoJsonService.salvar(livros);
+        StatusLeitura statusAnterior = livro.getStatus();
+        LocalDate dataConclusaoAnterior = livro.getDataConclusao();
+        livro.setStatus(status);
+        livro.setDataConclusao(status == StatusLeitura.LIDO ? LocalDate.now() : null);
+        try {
+            arquivoJsonService.salvar(livros);
+        } catch (RuntimeException e) {
+            livro.setStatus(statusAnterior);
+            livro.setDataConclusao(dataConclusaoAnterior);
+            throw e;
+        }
         logService.registrarAcao(new RegistroAtividade(
                 "ATUALIZAR_STATUS",
                 "Livro '" + livro.getTitulo() + "' -> status: " + status));
@@ -79,7 +100,7 @@ public class AcervoService {
     }
 
     public List<Livro> getLivros() {
-        return livros;
+        return Collections.unmodifiableList(new ArrayList<>(livros));
     }
 
     public List<RegistroAtividade> getHistoricoAtividades() {

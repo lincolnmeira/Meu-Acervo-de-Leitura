@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,16 +39,29 @@ public class ArquivoJsonService {
     // Salva a lista completa de livros no arquivo, sobrescrevendo o conteúdo anterior.
     // Cria a pasta "data/" automaticamente se ainda não existir.
     public void salvar(List<Livro> livros) {
+        Path arquivo = Path.of(CAMINHO_ARQUIVO);
+        Path temporario = arquivo.resolveSibling("livros.json.tmp");
         try {
-            Path pasta = Path.of("data");
-            if (!Files.exists(pasta)) {
-                Files.createDirectories(pasta);
-            }
-            try (FileWriter writer = new FileWriter(CAMINHO_ARQUIVO)) {
+            Files.createDirectories(arquivo.getParent());
+            try (FileWriter writer = new FileWriter(temporario.toFile())) {
                 gson.toJson(livros, writer);
             }
-        } catch (IOException e) {
-            System.err.println("Erro ao salvar livros: " + e.getMessage());
+            try {
+                Files.move(temporario, arquivo, StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException atomicMoveIndisponivel) {
+                Files.move(temporario, arquivo, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException | RuntimeException e) {
+            try {
+                Files.deleteIfExists(temporario);
+            } catch (IOException cleanupError) {
+                e.addSuppressed(cleanupError);
+            }
+            if (e instanceof IllegalStateException falhaPersistencia) {
+                throw falhaPersistencia;
+            }
+            throw new IllegalStateException("Não foi possível salvar os livros em " + arquivo + ".", e);
         }
     }
 

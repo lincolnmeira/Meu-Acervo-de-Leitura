@@ -100,6 +100,7 @@ Com a API rodando, abra o arquivo \`frontend/index.html\` diretamente no navegad
 | PUT    | \`/livros/{id}/status\` | Atualiza o status de leitura de um livro |
 | DELETE | \`/livros/{id}\` | Remove um livro do acervo |
 | GET    | \`/estatisticas\` | Retorna estatísticas de leitura (total lido, por gênero, por status) |
+| GET    | \`/estatisticas/mes-ano?mes=8&ano=2026\` | Retorna totais lidos no mês e no ano informados |
 
 ### Exemplo de cadastro (POST /livros)
 \`\`\`json
@@ -116,15 +117,16 @@ A interface web permite cadastrar, visualizar, marcar como lido e remover livros
 
 [Tela principal](docs/frontendmeuacervodeleitura.png)
 
-## 🔧 Melhorias Futuras
+## 🔧 Melhorias futuras
 
-- [ ] Validação de entrada mais robusta na API — atualmente, se o campo `genero` enviado no `POST /livros` não corresponder exatamente (case-sensitive) a uma constante do enum `Genero`, o campo fica silenciosamente `null` em vez de retornar um erro claro. No front-end isso já é mitigado com um `<select>` de opções fixas, mas a API em si ainda não valida. Próximo passo: validar a entrada e responder com `400 Bad Request` quando o gênero for inválido.
-- [ ] Estatísticas por mês/ano, com metas pessoais de leitura
-- [ ] Gráfico de leitura anual e percentual de livros lidos por gênero
-- [ ] Testes automatizados (JUnit)
-- [ ] Autenticação na API
-- [ ] Deploy da API e do front-end (Render/Railway/Vercel)
+- [ ] Persistir o histórico de atividades entre execuções
+- [ ] Metas pessoais de leitura e gráficos anuais
+- [ ] Ampliar os testes para serviços, persistência e endpoints da API
+- [ ] Autenticação e deploy da API e do front-end
 
+O cadastro valida título, autor e gênero e retorna `400 Bad Request` para dados inválidos. A atualização de status também valida o corpo e o valor do status. Os livros são persistidos em `data/livros.json`; o histórico de atividades permanece em memória e é reiniciado ao encerrar o programa.
+
+Se a gravação dos livros falhar, as operações de alteração são desfeitas em memória e a API responde com `500 Internal Server Error`.
 ## 📝 Licença
 
 Este projeto é de uso livre para fins de estudo e portfólio.

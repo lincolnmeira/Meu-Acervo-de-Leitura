@@ -45,23 +45,41 @@ function renderizarLivros(livros) {
             ? '<span class="selo-lido">&#10003;</span>'
             : "";
 
-        const statusTexto = livro.status === "LIDO" ? "lido" : "quero ler";
+        const statusTexto = livro.status === "LIDO" ? "lido"
+            : livro.status === "LENDO" ? "lendo" : "quero ler";
 
-        return `
-            <div class="livro-card ${classeStatus}">
-                ${selo}
-                <div class="livro-titulo">${livro.titulo}</div>
-                <div class="livro-info">${livro.autor} · ${livro.genero}</div>
-                <span class="livro-badge">${statusTexto}</span>
-                <div class="livro-acoes">
-                    <button class="btn-marcar-lido" data-id="${livro.id}">Marcar como lido</button>
-                    <button class="btn-remover" data-id="${livro.id}">Remover</button>
-                </div>
-            </div>
-        `;
-    }).join("");
+        const card = document.createElement("div");
+        card.className = `livro-card ${classeStatus}`;
+        if (selo) card.insertAdjacentHTML("beforeend", selo);
 
-    container.innerHTML = html;
+        const titulo = document.createElement("div");
+        titulo.className = "livro-titulo";
+        titulo.textContent = livro.titulo;
+        const info = document.createElement("div");
+        info.className = "livro-info";
+        info.textContent = `${livro.autor} · ${livro.genero}`;
+        const badge = document.createElement("span");
+        badge.className = "livro-badge";
+        badge.textContent = statusTexto;
+        const acoes = document.createElement("div");
+        acoes.className = "livro-acoes";
+        if (livro.status !== "LIDO") {
+            const marcar = document.createElement("button");
+            marcar.className = "btn-marcar-lido";
+            marcar.dataset.id = livro.id;
+            marcar.textContent = "Marcar como lido";
+            acoes.append(marcar);
+        }
+        const remover = document.createElement("button");
+        remover.className = "btn-remover";
+        remover.dataset.id = livro.id;
+        remover.textContent = "Remover";
+        acoes.append(remover);
+        card.append(titulo, info, badge, acoes);
+        return card;
+    });
+
+    container.replaceChildren(...html);
     conectarBotoesDeAcao();
 }
 
@@ -97,8 +115,7 @@ document.getElementById("form-cadastro").addEventListener("submit", async (event
         }
 
         document.getElementById("form-cadastro").reset();
-        carregarLivros();
-        carregarEstatisticas();
+        await Promise.all([carregarLivros(), carregarEstatisticas()]);
 
     } catch (erro) {
         console.error("Erro ao cadastrar livro:", erro);
@@ -147,8 +164,7 @@ async function marcarComoLido(id) {
             throw new Error("Falha ao atualizar status");
         }
 
-        carregarLivros();
-        carregarEstatisticas();
+        await Promise.all([carregarLivros(), carregarEstatisticas()]);
 
     } catch (erro) {
         console.error("Erro ao marcar como lido:", erro);
@@ -173,8 +189,7 @@ async function removerLivro(id) {
             throw new Error("Falha ao remover livro");
         }
 
-        carregarLivros();
-        carregarEstatisticas();
+        await Promise.all([carregarLivros(), carregarEstatisticas()]);
 
     } catch (erro) {
         console.error("Erro ao remover livro:", erro);
