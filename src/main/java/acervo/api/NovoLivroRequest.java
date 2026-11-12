@@ -17,4 +17,6 @@ public class NovoLivroRequest {
     public String titulo;
     public String autor;
     public Genero genero;
+    public Integer mesConclusao;
+    public Integer anoConclusao;
 }

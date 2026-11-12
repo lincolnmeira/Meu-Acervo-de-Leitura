@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class ArquivoJsonService {
         // serializar LocalDate via reflexão (ver bug documentado no LocalDateAdapter)
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .registerTypeAdapter(YearMonth.class, new YearMonthAdapter())
                 .setPrettyPrinting()
                 .create();
     }

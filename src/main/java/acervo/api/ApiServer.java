@@ -1,6 +1,7 @@
 package acervo.api;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -15,6 +16,7 @@ import acervo.model.Livro;
 import acervo.service.AcervoService;
 import acervo.service.EstatisticasService;
 import acervo.service.LocalDateAdapter;
+import acervo.service.YearMonthAdapter;
 
 /**
  * Classe responsável por expor o AcervoService como uma API REST,
@@ -33,6 +35,7 @@ public class ApiServer {
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .registerTypeAdapter(YearMonth.class, new YearMonthAdapter())
                 .create();
 
         this.app = Javalin.create(config -> {
@@ -81,6 +84,10 @@ public class ApiServer {
             try {
                 int mes = Integer.parseInt(mesParam);
                 int ano = Integer.parseInt(anoParam);
+                if (mes < 1 || mes > 12 || ano < 1) {
+                    enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                    return;
+                }
 
                 var resposta = new HashMap<String, Object>();
                 resposta.put("mes", mes);
@@ -98,7 +105,17 @@ public class ApiServer {
 
         // ===== [POST] /livros -> cadastra um novo livro =====
         app.post("/livros", ctx -> {
-            NovoLivroRequest dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+            NovoLivroRequest dados;
+            try {
+                dados = gson.fromJson(ctx.body(), NovoLivroRequest.class);
+            } catch (RuntimeException e) {
+                enviarErro(ctx, 400, "Corpo JSON inválido.");
+                return;
+            }
+            if (dados == null) {
+                enviarErro(ctx, 400, "Corpo JSON obrigatório.");
+                return;
+            }
 
             if (dados.titulo == null || dados.titulo.isBlank()) {
                 enviarErro(ctx, 400, "O campo 'titulo' é obrigatório.");
@@ -116,7 +133,21 @@ public class ApiServer {
                 return;
             }
 
+            if ((dados.mesConclusao == null) != (dados.anoConclusao == null)) {
+                enviarErro(ctx, 400, "Informe mês e ano de conclusão juntos.");
+                return;
+            }
+            if (dados.mesConclusao != null && (dados.mesConclusao < 1 || dados.mesConclusao > 12
+                    || dados.anoConclusao < 1)) {
+                enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                return;
+            }
+
             Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
+            if (dados.mesConclusao != null) {
+                novoLivro.setStatus(acervo.model.StatusLeitura.LIDO);
+                novoLivro.setMesAnoConclusao(YearMonth.of(dados.anoConclusao, dados.mesConclusao));
+            }
             boolean adicionado = acervoService.adicionarLivro(novoLivro);
 
             if (!adicionado) {
@@ -143,8 +174,29 @@ public class ApiServer {
                 return;
             }
 
-            AtualizarStatusRequest dados = gson.fromJson(ctx.body(), AtualizarStatusRequest.class);
-            acervoService.atualizarStatus(livro, dados.status);
+            AtualizarStatusRequest dados;
+            try {
+                dados = gson.fromJson(ctx.body(), AtualizarStatusRequest.class);
+            } catch (RuntimeException e) {
+                enviarErro(ctx, 400, "Corpo JSON inválido.");
+                return;
+            }
+            if (dados == null || dados.status == null) {
+                enviarErro(ctx, 400, "O campo 'status' é obrigatório e deve ser válido.");
+                return;
+            }
+            if ((dados.mesConclusao == null) != (dados.anoConclusao == null)) {
+                enviarErro(ctx, 400, "Informe mês e ano de conclusão juntos.");
+                return;
+            }
+            if (dados.mesConclusao != null && (dados.mesConclusao < 1 || dados.mesConclusao > 12
+                    || dados.anoConclusao < 1)) {
+                enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                return;
+            }
+            YearMonth conclusao = dados.mesConclusao == null ? null
+                    : YearMonth.of(dados.anoConclusao, dados.mesConclusao);
+            acervoService.atualizarStatus(livro, dados.status, conclusao);
 
             ctx.contentType("application/json");
             ctx.result(gson.toJson(livro));

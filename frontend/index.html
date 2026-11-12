@@ -1,94 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fbf6ee">
     <title>Meu Acervo de Leitura</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <header class="topbar">
+        <a class="brand" href="#estante" aria-label="Meu Acervo de Leitura, início">Meu Acervo de Leitura</a>
+        <nav class="main-nav" aria-label="Navegação principal">
+            <button class="nav-link active" type="button" data-view="estante">Minha estante</button>
+            <button class="nav-link" type="button" data-view="jornada">Minha jornada</button>
+        </nav>
+    </header>
 
-    <h1>Meu Acervo de Leitura</h1>
-    <p class="subtitulo">Cada livro lido é uma conquista. Registre a sua.</p>
+    <main>
+        <section id="view-estante" class="view">
+            <div class="page-heading">
+                <p class="eyebrow">SEU CANTINHO DE LEITURA</p>
+                <h1>Minha estante</h1>
+                <p class="subtitulo">Cada livro lido é uma conquista. Registre a sua.</p>
+            </div>
 
-    <!-- ===== FORMULÁRIO DE CADASTRO ===== -->
-    <!-- Submit capturado em script.js, envia via POST /livros sem recarregar a página -->
-    <section>
-        <h2>Cadastrar novo livro</h2>
-        <form id="form-cadastro">
+            <section class="section-block" aria-labelledby="titulo-cadastro">
+                <h2 id="titulo-cadastro">Adicionar um livro</h2>
+                <form id="form-cadastro" class="form-cadastro">
+                    <label class="field"><span>Título</span><input type="text" id="input-titulo" placeholder="Ex.: O pequeno príncipe" required></label>
+                    <label class="field"><span>Autor</span><input type="text" id="input-autor" placeholder="Nome do autor" required></label>
+                    <label class="field"><span>Gênero</span>
+                        <select id="input-genero" required>
+                            <option value="">Selecione o gênero</option>
+                            <option value="AUTO_AJUDA">Autoajuda</option><option value="BIOGRAFIA">Biografia</option>
+                            <option value="CLASSICO">Clássico</option><option value="POLITICA">Política</option>
+                            <option value="ECONOMIA">Economia</option><option value="FILOSOFIA">Filosofia</option>
+                            <option value="FINANCAS">Finanças</option><option value="FICCAO">Ficção</option>
+                            <option value="ROMANCE">Romance</option><option value="RELIGIOSO">Religioso</option>
+                            <option value="TECNOLOGIA">Tecnologia</option><option value="HISTORIA">História</option>
+                            <option value="MASCULINISTA">Masculinista</option><option value="CIENCIAS_EXATAS">Ciências exatas</option>
+                            <option value="TERROR">Terror</option><option value="FANTASIA">Fantasia</option>
+                            <option value="POESIA">Poesia</option><option value="AUTOBIOGRAFIA">Autobiografia</option>
+                        </select>
+                    </label>
+                    <fieldset class="completion-fields">
+                        <legend>Já terminou este livro? <span>(opcional)</span></legend>
+                        <label class="field"><span>Mês</span>
+                            <select id="input-mes-conclusao"><option value="">Ainda não terminei</option></select>
+                        </label>
+                        <label class="field"><span>Ano</span><input type="number" id="input-ano-conclusao" min="1900" max="2100" placeholder="Ano"></label>
+                        <p class="field-help">Informe mês e ano para registrar o livro como lido. Não pedimos o dia.</p>
+                    </fieldset>
+                    <button class="button-primary" type="submit">Adicionar à estante</button>
+                </form>
+            </section>
 
-            <input type="text" id="input-titulo" placeholder="Título" required>
-            <input type="text" id="input-autor" placeholder="Autor" required>
+            <section class="section-block" aria-labelledby="titulo-livros">
+                <div class="section-heading"><div><p class="eyebrow">TODAS AS SUAS HISTÓRIAS</p><h2 id="titulo-livros">Meus livros</h2></div><span id="contador-livros" class="count-pill">Carregando</span></div>
+                <div id="lista-livros" class="book-grid" aria-live="polite"><p class="empty-state">Carregando seus livros...</p></div>
+            </section>
+        </section>
 
-            <!-- 
-                Select fixo em vez de texto livre: evita erro de digitação,
-                já que a API exige correspondência exata com o enum Genero.
-                Ao adicionar um gênero novo no enum, adicionar aqui também.
-            -->
-            <select id="input-genero" required>
-                <option value="">Selecione o gênero</option>
-                 <option value="AUTO_AJUDA">Auto-ajuda</option>
-                <option value="BIOGRAFIA">Biografia</option>
-                <option value="CLASSICO">Clássico</option>
-                <option value="POLITICA">Política</option>
-                <option value="ECONOMIA">Economia</option>
-                <option value="FILOSOFIA">Filosofia</option>
-                <option value="FINANCAS">Finanças</option>
-                <option value="FICCAO">Ficção</option>
-                <option value="ROMANCE">Romance</option>
-                <option value="RELIGIOSO">Religioso</option>
-                <option value="TECNOLOGIA">Tecnologia</option>
-                <option value="HISTORIA">História</option>
-                <option value="MASCULINISTA">Masculinista</option>
+        <section id="view-jornada" class="view" hidden>
+            <div class="page-heading journey-heading">
+                <div><p class="eyebrow">UM CAPÍTULO DE CADA VEZ</p><h1>Sua leitura está ganhando ritmo.</h1><p class="subtitulo">Uma visão leve das histórias que você concluiu e das que ainda vêm pela frente.</p></div>
+                <label class="year-picker"><span>Ano da jornada</span><select id="select-ano-jornada" aria-label="Selecionar ano"></select></label>
+            </div>
 
-            </select>
+            <div class="journey-summary">
+                <article class="summary-card summary-featured"><p class="eyebrow">LIVROS CONCLUÍDOS</p><div class="summary-line"><strong id="total-lidos-ano">—</strong><span id="label-lidos-ano">neste ano</span></div><p id="resumo-lidos-ano" class="muted">Carregando sua jornada...</p></article>
+                <article class="summary-card"><p class="eyebrow">MÊS EM DESTAQUE</p><strong id="mes-destaque">—</strong><p id="resumo-mes-destaque" class="muted">Vamos descobrir juntos.</p></article>
+                <article class="summary-card"><p class="eyebrow">META ANUAL</p><strong class="coming-soon">Próxima etapa</strong><p class="muted">Vamos preparar sua meta de leitura depois dos gráficos.</p></article>
+            </div>
 
-            <button type="submit">Cadastrar</button>
+            <div class="journey-grid">
+                <section class="panel monthly-panel"><div class="panel-heading"><div><p class="eyebrow">SEU ANO EM PÁGINAS</p><h2>Sua jornada, mês a mês</h2><p class="muted">Cada barra representa livros que você concluiu.</p></div><span class="chart-legend"><i></i> Livros lidos</span></div><div id="grafico-mensal" class="monthly-chart" role="img" aria-label="Livros concluídos por mês"></div></section>
+                <section class="panel genre-panel"><div class="panel-heading"><div><p class="eyebrow">SEUS GÊNEROS</p><h2>Mapa de histórias</h2><p class="muted">O que você leu neste ano.</p></div></div><div id="grafico-generos" class="genre-content"></div><p id="curiosidade-generos" class="genre-note"></p></section>
+            </div>
+
+            <div class="journey-bottom-grid">
+                <section class="panel achievements-panel"><div class="panel-heading"><div><p class="eyebrow">PEQUENOS MARCOS, GRANDES HISTÓRIAS</p><h2>Conquistas de leitura</h2></div></div><div id="conquistas" class="achievement-list"></div></section>
+                <aside class="motivation-card"><p class="eyebrow">UM RECADO DA SUA ESTANTE</p><h2 id="mensagem-jornada">Toda grande jornada começa por uma página.</h2><p id="mensagem-progresso">Suas próximas histórias estão esperando por você.</p><button class="button-light" type="button" data-view="estante">Voltar à estante <span aria-hidden="true">→</span></button><div class="book-stack" aria-hidden="true"><i></i><i></i><i></i></div></aside>
+            </div>
+            <p id="estado-jornada" class="journey-state" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <dialog id="dialog-conclusao" class="completion-dialog">
+        <form id="form-conclusao">
+            <p class="eyebrow">MAIS UM LIVRO CONCLUÍDO</p><h2>Quando você terminou?</h2><p class="muted">Escolha mês e ano. Se não lembrar o mês, pode cancelar e marcar como lido com a data atual.</p>
+            <label class="field"><span>Mês</span><select id="dialog-mes" required></select></label>
+            <label class="field"><span>Ano</span><input id="dialog-ano" type="number" min="1900" max="2100" required></label>
+            <div class="dialog-actions"><button class="button-secondary" type="button" id="cancelar-conclusao">Cancelar</button><button class="button-primary" type="submit">Salvar leitura</button></div>
         </form>
-    </section>
+    </dialog>
 
-    <!-- ===== PAINEL DE ESTATÍSTICAS ===== -->
-    <!-- Preenchido via GET /estatisticas, por carregarEstatisticas() no script.js -->
-    <section id="painel-estatisticas">
-        <h2>Estatísticas</h2>
-        <p>Carregando estatísticas...</p>
-    </section>
-
-    <!-- ===== CONSULTA DE LIDOS POR MÊS/ANO ===== -->
-    <!-- Botão consulta GET /estatisticas/mes-ano?mes=X&ano=Y, ver script.js -->
-    <div id="consulta-mes-ano">
-        <label for="select-mes">Ver lidos em:</label>
-        <select id="select-mes">
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8" selected>Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
-        </select>
-        <input type="number" id="input-ano" value="2026" min="2000" max="2100" style="width: 80px;">
-        <button id="btn-consultar-mes-ano">Consultar</button>
-        <p id="resultado-mes-ano"></p>
-    </div>
-
-    <hr>
-
-    <!-- ===== LISTAGEM DE LIVROS ===== -->
-    <!-- Renderizado dinamicamente por renderizarLivros() no script.js -->
-    <h2>Meus livros</h2>
-    <div id="lista-livros">
-        <p>Carregando livros...</p>
-    </div>
-
-    <!-- Script no final do body: garante que o HTML acima já exista no DOM -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="script.js"></script>
 </body>
-
 </html>

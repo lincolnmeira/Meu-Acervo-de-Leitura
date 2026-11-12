@@ -1,272 +1,278 @@
-// ===================== CONFIGURAÇÃO =====================
-
-// URL base da API REST (Javalin), rodando localmente na porta 7000.
-// Todas as chamadas fetch() usam essa constante como prefixo.
 const API_URL = "http://localhost:7000";
+const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const coresGeneros = ["#5d921c", "#b78a5c", "#d8b94f", "#b9a7c9", "#7895a5", "#d48c72", "#c2a878"];
+let livrosAtuais = [];
+let livroParaConcluir = null;
+let toastTimer;
 
+function preencherMeses(select, incluirVazio = false) {
+    if (incluirVazio) select.add(new Option("Ainda não terminei", ""));
+    nomesMeses.forEach((mes, indice) => select.add(new Option(mes, String(indice + 1))));
+}
 
-// ===================== CARREGAR E EXIBIR LIVROS =====================
+async function formatarErro(resposta, fallback) {
+    let dados = {};
+    try { dados = await resposta.json(); } catch { /* Algumas respostas de erro não trazem JSON. */ }
+    throw new Error(dados.erro || fallback);
+}
 
-/**
- * Busca a lista de livros na API (GET /livros) e chama renderizarLivros()
- * para exibi-los na tela. Executada automaticamente ao carregar a página,
- * e também depois de qualquer cadastro/alteração, para manter a lista atualizada.
- */
+function mostrarToast(mensagem, erro = false) {
+    const toast = document.getElementById("toast");
+    toast.textContent = mensagem;
+    toast.classList.toggle("toast-error", erro);
+    toast.classList.add("visible");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("visible"), 3600);
+}
+
+function trocarVisao(visao) {
+    const jornada = visao === "jornada";
+    document.getElementById("view-estante").hidden = jornada;
+    document.getElementById("view-jornada").hidden = !jornada;
+    document.querySelectorAll(".nav-link").forEach(botao => {
+        const ativo = botao.dataset.view === visao;
+        botao.classList.toggle("active", ativo);
+        botao.setAttribute("aria-current", ativo ? "page" : "false");
+    });
+    if (jornada) renderizarJornada();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll("[data-view]").forEach(botao => botao.addEventListener("click", () => trocarVisao(botao.dataset.view)));
+document.querySelector(".brand").addEventListener("click", evento => {
+    evento.preventDefault();
+    trocarVisao("estante");
+});
+
 async function carregarLivros() {
+    const lista = document.getElementById("lista-livros");
     try {
         const resposta = await fetch(`${API_URL}/livros`);
-        const livros = await resposta.json();
-        renderizarLivros(livros);
+        if (!resposta.ok) throw new Error("A API não conseguiu carregar os livros.");
+        livrosAtuais = await resposta.json();
+        renderizarLivros();
+        renderizarJornada();
     } catch (erro) {
         console.error("Erro ao carregar livros:", erro);
-        document.getElementById("lista-livros").innerHTML =
-            "<p>Erro ao conectar com a API. Verifique se o servidor está rodando.</p>";
+        lista.replaceChildren(criarEstado("Não foi possível conectar à API. Confira se o servidor está ativo."));
+        document.getElementById("contador-livros").textContent = "Indisponível";
+        document.getElementById("estado-jornada").textContent = "Não foi possível carregar suas estatísticas. Verifique a conexão com a API.";
     }
 }
 
-/**
- * Recebe a lista de livros e monta o HTML como uma grade de cards.
- * Cada card recebe uma classe CSS diferente dependendo do status
- * (LIDO = destaque verde, QUERO_LER = neutro), reforçando visualmente
- * a sensação de "conquista" nos livros já lidos.
- */
-function renderizarLivros(livros) {
-    const container = document.getElementById("lista-livros");
+function criarEstado(texto, classe = "empty-state") {
+    const elemento = document.createElement("p");
+    elemento.className = classe;
+    elemento.textContent = texto;
+    return elemento;
+}
 
-    if (livros.length === 0) {
-        container.innerHTML = "<p>Nenhum livro cadastrado ainda.</p>";
+function renderizarLivros() {
+    const container = document.getElementById("lista-livros");
+    document.getElementById("contador-livros").textContent = `${livrosAtuais.length} ${livrosAtuais.length === 1 ? "livro" : "livros"}`;
+    if (!livrosAtuais.length) {
+        container.replaceChildren(criarEstado("Sua estante ainda está vazia. Cadastre um livro para começar."));
         return;
     }
 
-    const html = livros.map(livro => {
-        const classeStatus = livro.status === "LIDO" ? "livro-lido" : "livro-pendente";
-
-        const selo = livro.status === "LIDO"
-            ? '<span class="selo-lido">&#10003;</span>'
-            : "";
-
-        const statusTexto = livro.status === "LIDO" ? "lido" : "quero ler";
-
-        return `
-            <div class="livro-card ${classeStatus}">
-                ${selo}
-                <div class="livro-titulo">${livro.titulo}</div>
-                <div class="livro-info">${livro.autor} · ${livro.genero}</div>
-                <span class="livro-badge">${statusTexto}</span>
-                <div class="livro-acoes">
-                    <button class="btn-marcar-lido" data-id="${livro.id}">Marcar como lido</button>
-                    <button class="btn-remover" data-id="${livro.id}">Remover</button>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    container.innerHTML = html;
-    conectarBotoesDeAcao();
+    const cards = livrosAtuais.map(livro => {
+        const lido = livro.status === "LIDO";
+        const card = document.createElement("article");
+        card.className = `book-card ${lido ? "book-read" : "book-pending"}`;
+        const top = document.createElement("div");
+        top.className = "book-card-top";
+        const genero = document.createElement("span");
+        genero.className = "book-genre";
+        genero.textContent = String(livro.genero || "Sem gênero").replaceAll("_", " ");
+        top.append(genero);
+        if (lido) {
+            const seal = document.createElement("span"); seal.className = "book-seal"; seal.textContent = "✓"; seal.setAttribute("aria-label", "Concluído"); top.append(seal);
+        }
+        const title = document.createElement("h3"); title.textContent = livro.titulo;
+        const author = document.createElement("p"); author.className = "book-author"; author.textContent = livro.autor;
+        const status = document.createElement("span"); status.className = "status-chip"; status.textContent = lido ? `Lido${formatarMesAno(mesAnoDoLivro(livro))}` : livro.status === "LENDO" ? "Lendo" : "Quero ler";
+        const actions = document.createElement("div"); actions.className = "book-actions";
+        if (!lido) {
+            const finish = document.createElement("button"); finish.className = "button-secondary"; finish.type = "button"; finish.textContent = "Marcar como lido";
+            finish.addEventListener("click", () => abrirDialogConclusao(livro)); actions.append(finish);
+        }
+        const remove = document.createElement("button"); remove.className = "button-quiet"; remove.type = "button"; remove.textContent = "Remover";
+        remove.addEventListener("click", () => removerLivro(livro)); actions.append(remove);
+        card.append(top, title, author, status, actions);
+        return card;
+    });
+    container.replaceChildren(...cards);
 }
 
+function mesAnoDoLivro(livro) {
+    if (livro.mesAnoConclusao) return livro.mesAnoConclusao;
+    if (livro.dataConclusao) return livro.dataConclusao.slice(0, 7);
+    return null;
+}
 
-// ===================== CADASTRO DE NOVO LIVRO =====================
+function formatarMesAno(valor) {
+    if (!valor) return "";
+    const [ano, mes] = valor.split("-").map(Number);
+    return ` · ${nomesMeses[mes - 1]} ${ano}`;
+}
 
-/**
- * Captura o envio do formulário de cadastro (#form-cadastro).
- * Monta o objeto com os dados digitados, envia via POST /livros,
- * e recarrega a lista de livros para refletir o novo cadastro.
- */
-document.getElementById("form-cadastro").addEventListener("submit", async (evento) => {
+document.getElementById("form-cadastro").addEventListener("submit", async evento => {
     evento.preventDefault();
-
-    const novoLivro = {
-        titulo: document.getElementById("input-titulo").value,
-        autor: document.getElementById("input-autor").value,
+    const mes = document.getElementById("input-mes-conclusao").value;
+    const ano = document.getElementById("input-ano-conclusao").value;
+    if (Boolean(mes) !== Boolean(ano)) {
+        mostrarToast("Para registrar como lido, informe mês e ano juntos.", true);
+        return;
+    }
+    const dados = {
+        titulo: document.getElementById("input-titulo").value.trim(),
+        autor: document.getElementById("input-autor").value.trim(),
         genero: document.getElementById("input-genero").value
     };
-
+    if (mes && ano) { dados.mesConclusao = Number(mes); dados.anoConclusao = Number(ano); }
     try {
-        const resposta = await fetch(`${API_URL}/livros`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(novoLivro)
-        });
-
-        if (!resposta.ok) {
-            // Lê a mensagem de erro específica que a API retorna
-            // (ex: "Já existe um livro cadastrado com o título ...")
-            const erroBody = await resposta.json();
-            throw new Error(erroBody.erro || "Falha ao cadastrar livro");
-        }
-
-        document.getElementById("form-cadastro").reset();
-        carregarLivros();
-        carregarEstatisticas();
-
-    } catch (erro) {
-        console.error("Erro ao cadastrar livro:", erro);
-        alert(erro.message);
-    }
+        const resposta = await fetch(`${API_URL}/livros`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dados) });
+        if (!resposta.ok) return await formatarErro(resposta, "Não foi possível cadastrar o livro.");
+        evento.target.reset();
+        mostrarToast(mes ? "Livro cadastrado como lido. Boa leitura!" : "Livro adicionado à estante!");
+        await carregarLivros();
+    } catch (erro) { mostrarToast(erro.message, true); }
 });
 
-
-// ===================== AÇÕES NOS LIVROS (MARCAR COMO LIDO / REMOVER) =====================
-
-/**
- * Adiciona os event listeners nos botões de "marcar como lido" e "remover"
- * de cada livro da listagem. Precisa ser chamada toda vez que a lista é
- * re-renderizada, já que os botões antigos são substituídos por novos elementos.
- */
-function conectarBotoesDeAcao() {
-
-    document.querySelectorAll(".btn-marcar-lido").forEach(botao => {
-        botao.addEventListener("click", async () => {
-            const id = botao.dataset.id;
-            await marcarComoLido(id);
-        });
-    });
-
-    document.querySelectorAll(".btn-remover").forEach(botao => {
-        botao.addEventListener("click", async () => {
-            const id = botao.dataset.id;
-            await removerLivro(id);
-        });
-    });
+function abrirDialogConclusao(livro) {
+    livroParaConcluir = livro;
+    document.getElementById("dialog-mes").value = String(new Date().getMonth() + 1);
+    document.getElementById("dialog-ano").value = new Date().getFullYear();
+    document.getElementById("dialog-conclusao").showModal();
 }
 
-/**
- * Envia uma requisição PUT para /livros/{id}/status, atualizando
- * o status do livro para "LIDO". Depois, recarrega a lista e as estatísticas.
- */
-async function marcarComoLido(id) {
+document.getElementById("cancelar-conclusao").addEventListener("click", () => document.getElementById("dialog-conclusao").close());
+document.getElementById("form-conclusao").addEventListener("submit", async evento => {
+    evento.preventDefault();
+    if (!livroParaConcluir) return;
+    const mesConclusao = Number(document.getElementById("dialog-mes").value);
+    const anoConclusao = Number(document.getElementById("dialog-ano").value);
     try {
-        const resposta = await fetch(`${API_URL}/livros/${id}/status`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "LIDO" })
-        });
-
-        if (!resposta.ok) {
-            throw new Error("Falha ao atualizar status");
-        }
-
-        carregarLivros();
-        carregarEstatisticas();
-
-    } catch (erro) {
-        console.error("Erro ao marcar como lido:", erro);
-        alert("Não foi possível atualizar o status do livro.");
-    }
-}
-
-/**
- * Envia uma requisição DELETE para /livros/{id}, removendo o livro.
- * Depois, recarrega a lista e as estatísticas.
- */
-async function removerLivro(id) {
-    const confirmar = confirm("Tem certeza que deseja remover este livro?");
-    if (!confirmar) return;
-
-    try {
-        const resposta = await fetch(`${API_URL}/livros/${id}`, {
-            method: "DELETE"
-        });
-
-        if (!resposta.ok) {
-            throw new Error("Falha ao remover livro");
-        }
-
-        carregarLivros();
-        carregarEstatisticas();
-
-    } catch (erro) {
-        console.error("Erro ao remover livro:", erro);
-        alert("Não foi possível remover o livro.");
-    }
-}
-
-
-// ===================== ESTATÍSTICAS =====================
-
-/**
- * Busca as estatísticas de leitura na API (GET /estatisticas) e
- * exibe o resumo no painel #painel-estatisticas.
- */
-async function carregarEstatisticas() {
-    try {
-        const resposta = await fetch(`${API_URL}/estatisticas`);
-        const dados = await resposta.json();
-        renderizarEstatisticas(dados);
-    } catch (erro) {
-        console.error("Erro ao carregar estatísticas:", erro);
-    }
-}
-
-/**
- * Recebe o objeto de estatísticas (totalLido, porGenero, porStatus,
- * porcentagemPorGenero) e monta o HTML de exibição dentro do painel.
- */
-function renderizarEstatisticas(dados) {
-    const painel = document.getElementById("painel-estatisticas");
-
-    const naFila = dados.porStatus["QUERO_LER"] || 0;
-
-    const generosTexto = Object.entries(dados.porGenero)
-        .map(([genero, qtd]) => `${genero}: ${qtd}`)
-        .join(" · ") || "Nenhum";
-
-    // Monta o texto de porcentagem por gênero, arredondando para 1 casa decimal
-    // (o back-end envia o valor "cru", com muitas casas decimais)
-    const porcentagensTexto = Object.entries(dados.porcentagemPorGenero)
-        .map(([genero, pct]) => `${genero}: ${pct.toFixed(1)}%`)
-        .join(" · ") || "Nenhum livro lido ainda";
-
-    painel.innerHTML = `
-        <h2>Minha estante</h2>
-        <div class="stats-destaque">
-            <div class="stat-item">
-                <span class="stat-numero stat-lidos">${dados.totalLido}</span>
-                <span class="stat-label">total lidos</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-numero stat-fila">${naFila}</span>
-                <span class="stat-label">na fila</span>
-            </div>
-        </div>
-        <p class="stats-generos">${generosTexto}</p>
-        <p class="stats-porcentagem"><strong>Seu perfil de leitura:</strong> ${porcentagensTexto}</p>
-    `;
-}
-
-/**
- * Captura o clique no botão de consulta por mês/ano, busca os dados
- * na API (GET /estatisticas/mes-ano) e exibe o resultado na tela.
- */
-document.getElementById("btn-consultar-mes-ano").addEventListener("click", async () => {
-    const mes = document.getElementById("select-mes").value;
-    const ano = document.getElementById("input-ano").value;
-
-    const resultadoEl = document.getElementById("resultado-mes-ano");
-
-    try {
-        const resposta = await fetch(`${API_URL}/estatisticas/mes-ano?mes=${mes}&ano=${ano}`);
-
-        if (!resposta.ok) {
-            throw new Error("Falha ao consultar estatísticas");
-        }
-
-        const dados = await resposta.json();
-
-        resultadoEl.textContent =
-            `Você leu ${dados.totalLidoNoMes} livro(s) em ${mes}/${ano}, ` +
-            `e ${dados.totalLidoNoAno} no ano de ${ano} inteiro.`;
-
-    } catch (erro) {
-        console.error("Erro ao consultar mês/ano:", erro);
-        resultadoEl.textContent = "Não foi possível consultar as estatísticas.";
-    }
+        const resposta = await fetch(`${API_URL}/livros/${livroParaConcluir.id}/status`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "LIDO", mesConclusao, anoConclusao }) });
+        if (!resposta.ok) return await formatarErro(resposta, "Não foi possível atualizar o livro.");
+        document.getElementById("dialog-conclusao").close();
+        livroParaConcluir = null;
+        mostrarToast("Leitura registrada. Mais uma história na sua jornada!");
+        await carregarLivros();
+    } catch (erro) { mostrarToast(erro.message, true); }
 });
 
+async function removerLivro(livro) {
+    if (!confirm(`Remover “${livro.titulo}” da estante?`)) return;
+    try {
+        const resposta = await fetch(`${API_URL}/livros/${livro.id}`, { method: "DELETE" });
+        if (!resposta.ok) return await formatarErro(resposta, "Não foi possível remover o livro.");
+        mostrarToast("Livro removido da estante.");
+        await carregarLivros();
+    } catch (erro) { mostrarToast(erro.message, true); }
+}
 
-// ===================== INICIALIZAÇÃO =====================
+function preencherAnos() {
+    const select = document.getElementById("select-ano-jornada");
+    const anoAtual = new Date().getFullYear();
+    for (let ano = anoAtual; ano >= 1900; ano--) select.add(new Option(String(ano), String(ano)));
+    select.value = String(anoAtual);
+    select.addEventListener("change", renderizarJornada);
+}
 
-// Executa a busca de livros e estatísticas assim que o script é carregado.
+function renderizarJornada() {
+    const ano = Number(document.getElementById("select-ano-jornada").value || new Date().getFullYear());
+    const concluidos = livrosAtuais.filter(livro => livro.status === "LIDO" && mesAnoDoLivro(livro));
+    const livrosAno = concluidos.filter(livro => Number(mesAnoDoLivro(livro).slice(0, 4)) === ano);
+    const totaisMes = Array(12).fill(0);
+    const generos = new Map();
+    livrosAno.forEach(livro => {
+        const mes = Number(mesAnoDoLivro(livro).slice(5, 7));
+        if (mes >= 1 && mes <= 12) totaisMes[mes - 1]++;
+        const genero = livro.genero || "OUTROS";
+        generos.set(genero, (generos.get(genero) || 0) + 1);
+    });
+    document.getElementById("total-lidos-ano").textContent = String(livrosAno.length);
+    document.getElementById("label-lidos-ano").textContent = livrosAno.length === 1 ? "livro neste ano" : "livros neste ano";
+    document.getElementById("resumo-lidos-ano").textContent = livrosAno.length ? `Você concluiu ${livrosAno.length} ${livrosAno.length === 1 ? "história" : "histórias"} em ${ano}.` : `Nenhum livro concluído registrado em ${ano} ainda.`;
+    const maior = Math.max(...totaisMes);
+    if (maior) {
+        const indice = totaisMes.indexOf(maior);
+        document.getElementById("mes-destaque").textContent = nomesMeses[indice];
+        document.getElementById("resumo-mes-destaque").textContent = `${maior} ${maior === 1 ? "livro concluído" : "livros concluídos"}`;
+    } else {
+        document.getElementById("mes-destaque").textContent = "Ainda por vir";
+        document.getElementById("resumo-mes-destaque").textContent = "Sua próxima história pode começar agora.";
+    }
+    renderizarGraficoMensal(totaisMes);
+    renderizarGeneros(generos, livrosAno.length);
+    renderizarConquistas(concluidos, livrosAno, generos);
+    const progresso = livrosAno.length ? `Este ano você já concluiu ${livrosAno.length} ${livrosAno.length === 1 ? "livro" : "livros"}.` : "Sua próxima história está esperando por você.";
+    document.getElementById("mensagem-progresso").textContent = progresso;
+    document.getElementById("mensagem-jornada").textContent = livrosAno.length >= 25 ? "Vinte e cinco histórias. Que jornada bonita!" : livrosAno.length ? "Cada livro abre uma nova janela." : "Toda grande jornada começa por uma página.";
+    document.getElementById("estado-jornada").textContent = "";
+}
+
+function renderizarGraficoMensal(totais) {
+    const chart = document.getElementById("grafico-mensal");
+    chart.replaceChildren();
+    const maximo = Math.max(1, ...totais);
+    totais.forEach((total, indice) => {
+        const grupo = document.createElement("div"); grupo.className = "month-column";
+        const barraArea = document.createElement("div"); barraArea.className = "bar-area";
+        const valor = document.createElement("span"); valor.className = "bar-value"; valor.textContent = total ? String(total) : "";
+        const barra = document.createElement("div"); barra.className = `month-bar${total ? " has-books" : ""}${total === maximo && total > 0 ? " month-best" : ""}`;
+        barra.style.height = `${Math.max(total ? 12 : 3, total / maximo * 100)}%`;
+        barra.title = `${nomesMeses[indice]}: ${total} ${total === 1 ? "livro" : "livros"}`;
+        barra.setAttribute("aria-label", barra.title);
+        const label = document.createElement("span"); label.className = "month-label"; label.textContent = nomesMeses[indice].slice(0, 3);
+        barraArea.append(valor, barra); grupo.append(barraArea, label); chart.append(grupo);
+    });
+}
+
+function renderizarGeneros(generos, total) {
+    const area = document.getElementById("grafico-generos"); area.replaceChildren();
+    const nota = document.getElementById("curiosidade-generos");
+    if (!total) { area.append(criarEstado("Quando concluir livros neste ano, seu mapa de gêneros aparecerá aqui.", "genre-empty")); nota.textContent = ""; return; }
+    const entries = [...generos.entries()].sort((a, b) => b[1] - a[1]);
+    let acumulado = 0;
+    const stops = entries.map(([genero, qtd], indice) => {
+        const inicio = acumulado; acumulado += qtd / total * 100;
+        return `${coresGeneros[indice % coresGeneros.length]} ${inicio}% ${acumulado}%`;
+    });
+    const donut = document.createElement("div"); donut.className = "genre-donut"; donut.style.background = `conic-gradient(${stops.join(",")})`;
+    const centro = document.createElement("div"); centro.className = "donut-center";
+    const num = document.createElement("strong"); num.textContent = String(total); const caption = document.createElement("span"); caption.textContent = total === 1 ? "livro" : "livros"; centro.append(num, caption); donut.append(centro);
+    const legend = document.createElement("div"); legend.className = "genre-legend";
+    entries.forEach(([genero, qtd], indice) => {
+        const item = document.createElement("div"); item.className = "genre-legend-item";
+        const dot = document.createElement("i"); dot.style.background = coresGeneros[indice % coresGeneros.length];
+        const name = document.createElement("span"); name.textContent = genero.replaceAll("_", " ").toLowerCase();
+        const pct = document.createElement("b"); pct.textContent = `${Math.round(qtd / total * 100)}%`;
+        item.append(dot, name, pct); legend.append(item);
+    });
+    area.append(donut, legend);
+    const favorito = entries[0][0].replaceAll("_", " ").toLowerCase();
+    nota.textContent = `Seu gênero mais lido neste ano: ${favorito}.`;
+}
+
+function renderizarConquistas(todosLidos, lidosAno, generos) {
+    const area = document.getElementById("conquistas"); area.replaceChildren();
+    const conquistas = [
+        { icone: "📚", nome: "Clube dos 25", descricao: "Concluir 25 livros no total", desbloqueada: todosLidos.length >= 25 },
+        { icone: "🌱", nome: "Novo capítulo", descricao: "Explorar 3 gêneros neste ano", desbloqueada: generos.size >= 3 },
+        { icone: "✨", nome: "Ritmo de leitura", descricao: "Concluir um livro em 3 meses diferentes", desbloqueada: new Set(lidosAno.map(livro => mesAnoDoLivro(livro).slice(5, 7))).size >= 3 }
+    ];
+    conquistas.forEach(conquista => {
+        const item = document.createElement("article"); item.className = `achievement${conquista.desbloqueada ? " unlocked" : " locked"}`;
+        const icon = document.createElement("span"); icon.className = "achievement-icon"; icon.textContent = conquista.icone;
+        const content = document.createElement("div"); const title = document.createElement("h3"); title.textContent = conquista.nome; const detail = document.createElement("p"); detail.textContent = conquista.descricao; content.append(title, detail);
+        const flag = document.createElement("span"); flag.className = "achievement-flag"; flag.textContent = conquista.desbloqueada ? "Conquistada" : "Em andamento";
+        item.append(icon, content, flag); area.append(item);
+    });
+}
+
+preencherMeses(document.getElementById("input-mes-conclusao"), true);
+preencherMeses(document.getElementById("dialog-mes"));
+preencherAnos();
 carregarLivros();
-carregarEstatisticas();

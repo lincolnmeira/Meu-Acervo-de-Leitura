@@ -1,283 +1,170 @@
-/* ===================== RESET E BASE ===================== */
-/* Remove margens/padding padrão do navegador e usa box-sizing
-   mais previsível em todos os elementos */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    color-scheme: light;
+    --paper: #fbf6ee;
+    --surface: #fffdf9;
+    --surface-warm: #f4eee0;
+    --ink: #3d1b10;
+    --text: #34312d;
+    --muted: #81796e;
+    --line: #e9dfcf;
+    --green: #5d921c;
+    --green-soft: #f3f9ec;
+    --shadow: 0 12px 34px rgba(74, 27, 12, .07);
 }
 
-body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background-color: #FBF6EE; /* tom papel/creme, como conversamos */
-    color: #2C2C2A;
-    padding: 2rem;
-    max-width: 900px;
-    margin: 0 auto; /* centraliza o conteúdo na página */
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; line-height: 1.5; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+
+.topbar { height: 76px; padding: 0 max(28px, calc((100vw - 1240px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 24px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.brand { color: var(--ink); font: 24px Georgia, "Times New Roman", serif; text-decoration: none; white-space: nowrap; }
+.main-nav { display: flex; gap: 8px; }
+.nav-link { border: 0; border-radius: 24px; padding: 11px 19px; color: var(--ink); background: transparent; }
+.nav-link:hover { background: var(--surface-warm); }
+.nav-link.active { color: #fff; background: var(--ink); }
+main { width: min(1240px, calc(100% - 56px)); margin: 0 auto; padding: 46px 0 72px; }
+.page-heading { margin-bottom: 32px; }
+.page-heading h1 { margin: 3px 0 8px; color: var(--ink); font: 43px/1.15 Georgia, "Times New Roman", serif; letter-spacing: -.7px; }
+.subtitulo { margin: 0; color: var(--muted); font-size: 16px; }
+.eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: 1.3px; }
+h2, h3, p { margin-top: 0; }
+.section-block { margin: 36px 0 48px; }
+.section-block h2, .panel h2 { margin: 0; color: var(--ink); font: 26px Georgia, serif; }
+.form-cadastro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; margin-top: 17px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-warm); }
+.field { display: grid; gap: 6px; min-width: 0; color: var(--ink); font-size: 13px; font-weight: 650; }
+.field input, .field select { width: 100%; min-height: 44px; border: 1px solid #dfd1ba; border-radius: 9px; padding: 9px 12px; background: #fff; color: var(--text); }
+.field input:focus, .field select:focus, button:focus-visible { outline: 3px solid rgba(93, 146, 28, .3); outline-offset: 2px; }
+.completion-fields { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(180px, 1fr) minmax(150px, 1fr) 2fr; align-items: end; gap: 16px; margin: 0; padding: 15px 0 0; border: 0; border-top: 1px dashed #d8cbb7; }
+.completion-fields legend { padding: 0 8px 0 0; color: var(--ink); font-size: 14px; font-weight: 700; }
+.completion-fields legend { grid-column: 1 / -1; }
+.completion-fields legend span, .field-help { color: var(--muted); font-size: 12px; font-weight: 400; }
+.field-help { align-self: center; margin: 0; }
+.button-primary, .button-secondary, .button-quiet, .button-light { border-radius: 9px; padding: 10px 15px; font-weight: 650; transition: transform .15s ease, background .15s ease; }
+.button-primary { border: 1px solid var(--ink); color: #fff; background: var(--ink); }
+.button-primary:hover { background: #6b2e15; transform: translateY(-1px); }
+.form-cadastro > .button-primary { justify-self: start; min-height: 44px; }
+.button-secondary { border: 1px solid #d8cbb7; color: var(--ink); background: #fff; }
+.button-secondary:hover { background: var(--surface-warm); }
+.button-quiet { border: 1px solid transparent; color: var(--muted); background: transparent; }
+.button-quiet:hover { color: var(--ink); background: var(--surface-warm); }
+.section-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 18px; }
+.count-pill { padding: 6px 12px; border: 1px solid var(--line); border-radius: 20px; color: var(--muted); background: var(--surface); font-size: 13px; }
+.book-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+.book-card { min-width: 0; min-height: 204px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); transition: transform .16s ease, box-shadow .16s ease; }
+.book-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.book-read { border-color: #b4cf96; background: var(--green-soft); }
+.book-card-top { display: flex; justify-content: space-between; align-items: center; }
+.book-genre { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .8px; }
+.book-seal { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 800; }
+.book-card h3 { margin: 15px 0 4px; color: var(--ink); font: 21px/1.25 Georgia, serif; overflow-wrap: anywhere; }
+.book-author { margin-bottom: 12px; color: var(--muted); font-size: 13px; }
+.status-chip { display: inline-block; padding: 3px 11px; border-radius: 18px; color: var(--muted); background: #eeeae2; font-size: 11px; font-weight: 700; }
+.book-read .status-chip { color: #fff; background: var(--green); }
+.book-actions { display: flex; gap: 5px; margin-top: 16px; flex-wrap: wrap; }
+.book-actions button { padding: 7px 10px; font-size: 12px; }
+.empty-state, .genre-empty { grid-column: 1 / -1; margin: 0; padding: 34px 24px; border: 1px dashed #d8cbb7; border-radius: 14px; color: var(--muted); background: rgba(255,253,249,.55); text-align: center; }
+
+.journey-heading { display: flex; justify-content: space-between; align-items: end; gap: 32px; }
+.journey-heading h1 { max-width: 800px; }
+.year-picker { display: grid; gap: 6px; min-width: 150px; color: var(--muted); font-size: 12px; font-weight: 700; }
+.year-picker select { min-height: 42px; padding: 8px 13px; border: 1px solid #dfd1ba; border-radius: 9px; color: var(--ink); background: var(--surface); }
+.journey-summary { display: grid; grid-template-columns: 1fr 1fr 1.08fr; gap: 16px; margin: 30px 0 18px; }
+.summary-card, .panel { border: 1px solid var(--line); border-radius: 17px; background: var(--surface); box-shadow: 0 3px 12px rgba(74,27,12,.025); }
+.summary-card { min-height: 143px; padding: 22px 25px; }
+.summary-featured { background: #fffaf0; }
+.summary-line { display: flex; align-items: baseline; gap: 11px; color: var(--muted); }
+.summary-line strong { color: var(--green); font: 54px/1 Georgia, serif; }
+.summary-card > strong { display: block; color: var(--ink); font: 29px Georgia, serif; }
+.summary-card .muted, .panel .muted { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+.coming-soon { font-size: 23px !important; }
+.journey-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 18px; }
+.panel { padding: 23px 25px; }
+.panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.panel-heading h2 { font-size: 23px; }
+.chart-legend { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: 20px; color: var(--muted); background: var(--paper); font-size: 11px; white-space: nowrap; }
+.chart-legend i, .genre-legend-item i { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #75a53b; }
+.monthly-chart { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; align-items: end; height: 236px; margin-top: 27px; padding: 0 1px; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(to top, transparent 0, transparent 57px, #f0e9dd 58px, transparent 59px); }
+.month-column { display: flex; height: 100%; min-width: 0; flex-direction: column; justify-content: end; align-items: center; gap: 8px; }
+.bar-area { display: flex; width: 100%; height: calc(100% - 24px); flex-direction: column; justify-content: end; align-items: center; gap: 5px; }
+.bar-value { min-height: 16px; color: var(--ink); font-size: 11px; font-weight: 700; }
+.month-bar { width: min(30px, 74%); min-height: 3px; border-radius: 7px 7px 2px 2px; background: #e6e0d5; transition: height .3s ease, background .15s ease; }
+.month-bar.has-books { background: #9abd70; }
+.month-bar.month-best { background: var(--green); }
+.month-label { padding-bottom: 5px; color: var(--muted); font-size: 10px; }
+.genre-content { display: flex; min-height: 210px; align-items: center; justify-content: center; gap: 22px; padding: 15px 0 6px; }
+.genre-donut { display: grid; width: 148px; height: 148px; flex: 0 0 148px; place-items: center; border-radius: 50%; }
+.donut-center { display: flex; width: 96px; height: 96px; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: var(--surface); }
+.donut-center strong { color: var(--ink); font: 30px Georgia, serif; }
+.donut-center span { color: var(--muted); font-size: 11px; }
+.genre-legend { display: grid; min-width: 120px; gap: 10px; }
+.genre-legend-item { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 7px; font-size: 11px; }
+.genre-legend-item i { width: 8px; height: 8px; }
+.genre-legend-item span { overflow: hidden; color: var(--text); text-overflow: ellipsis; text-transform: capitalize; white-space: nowrap; }
+.genre-legend-item b { color: var(--muted); font-size: 11px; }
+.genre-note { margin: 0; color: var(--green); font-size: 12px; font-weight: 700; }
+.journey-bottom-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 18px; margin-top: 18px; }
+.achievement-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; margin-top: 17px; }
+.achievement { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 9px; min-height: 100px; padding: 12px; border-radius: 12px; background: #f7f2e7; }
+.achievement.locked { opacity: .7; background: #faf8f2; }
+.achievement-icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #e9d9ad; font-size: 19px; }
+.achievement h3 { margin: 0 0 3px; color: var(--ink); font: 14px Georgia, serif; }
+.achievement p { margin: 0; color: var(--muted); font-size: 10px; }
+.achievement-flag { grid-column: 2; color: var(--green); font-size: 9px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
+.locked .achievement-flag { color: var(--muted); }
+.motivation-card { position: relative; overflow: hidden; min-height: 215px; padding: 24px; border-radius: 17px; color: #fffaf0; background: var(--ink); }
+.motivation-card .eyebrow { color: #d9c6a9; }
+.motivation-card h2 { max-width: 360px; margin: 15px 0 9px; font: 26px/1.2 Georgia, serif; }
+.motivation-card p:not(.eyebrow) { max-width: 300px; margin-bottom: 15px; color: #eadfd0; font-size: 13px; }
+.button-light { position: relative; z-index: 1; border: 0; color: var(--ink); background: #f1e4c8; font-size: 12px; }
+.book-stack { position: absolute; right: 21px; bottom: 17px; display: flex; flex-direction: column-reverse; align-items: end; gap: 4px; transform: rotate(-7deg); }
+.book-stack i { display: block; width: 80px; height: 13px; border-radius: 3px; background: #75a53b; box-shadow: inset 5px 0 rgba(255,255,255,.16); }
+.book-stack i:nth-child(2) { width: 92px; background: #b78a5c; }
+.book-stack i:nth-child(3) { width: 70px; background: #d8b94f; }
+.journey-state { color: #a33727; font-size: 13px; }
+.completion-dialog { width: min(460px, calc(100% - 32px)); padding: 26px; border: 1px solid var(--line); border-radius: 17px; color: var(--text); background: var(--surface); box-shadow: var(--shadow); }
+.completion-dialog::backdrop { background: rgba(34, 22, 16, .42); backdrop-filter: blur(2px); }
+.completion-dialog h2 { margin: 0 0 8px; color: var(--ink); font: 27px Georgia, serif; }
+.completion-dialog .muted { margin-bottom: 18px; color: var(--muted); font-size: 13px; }
+.completion-dialog .field { margin-top: 12px; }
+.dialog-actions { display: flex; justify-content: end; gap: 8px; margin-top: 23px; }
+.toast { position: fixed; right: 24px; bottom: 24px; z-index: 10; max-width: min(420px, calc(100% - 40px)); padding: 13px 17px; border-radius: 11px; color: #fff; background: #355b16; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .2s, transform .2s; }
+.toast.visible { opacity: 1; transform: translateY(0); }
+.toast-error { background: #9b3425; }
+
+@media (max-width: 900px) {
+    .form-cadastro { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .journey-grid, .journey-bottom-grid { grid-template-columns: 1fr; }
+    .genre-content { justify-content: start; }
+    .achievement-list { grid-template-columns: 1fr; }
 }
-
-/* ===================== TÍTULO PRINCIPAL ===================== */
-h1 {
-    font-family: Georgia, 'Times New Roman', serif; /* fonte serifada, remete a livro */
-    font-size: 2rem;
-    font-weight: 500;
-    color: #4A1B0C; /* marrom terroso, combina com o fundo creme */
-    margin-bottom: 1.5rem;
+@media (max-width: 600px) {
+    .topbar { height: auto; min-height: 70px; flex-wrap: wrap; padding: 13px 18px; }
+    .brand { font-size: 20px; }
+    .main-nav { width: 100%; }
+    .nav-link { flex: 1; padding: 9px 12px; font-size: 13px; }
+    main { width: calc(100% - 36px); padding: 32px 0 52px; }
+    .page-heading h1 { font-size: 34px; }
+    .journey-heading { align-items: start; flex-direction: column; gap: 17px; }
+    .year-picker { width: 100%; }
+    .journey-summary { grid-template-columns: 1fr; }
+    .summary-card { min-height: 120px; }
+    .form-cadastro { grid-template-columns: 1fr; padding: 17px; }
+    .completion-fields { grid-template-columns: 1fr 1fr; }
+    .field-help { grid-column: 1 / -1; }
+    .book-grid { grid-template-columns: 1fr; }
+    .panel { padding: 19px 15px; }
+    .panel-heading { flex-direction: column; }
+    .panel-heading h2 { font-size: 21px; }
+    .monthly-chart { gap: 3px; height: 205px; margin-top: 19px; }
+    .month-label { font-size: 9px; }
+    .genre-content { flex-direction: column; }
+    .genre-legend { width: 100%; grid-template-columns: 1fr 1fr; }
+    .achievement-list { grid-template-columns: 1fr; }
+    .motivation-card { min-height: 240px; }
 }
-
-h2 {
-    font-family: Georgia, serif;
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: #4A1B0C;
-    margin-bottom: 0.75rem;
-}
-
-/* ===================== PAINEL DE ESTATÍSTICAS ===================== */
-
-#painel-estatisticas {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #E3D9C6; /* linha sutil separando das outras seções */
-}
-
-/* Container horizontal com os destaques numéricos (total lidos / na fila) */
-.stats-destaque {
-    display: flex;
-    gap: 2rem;
-    margin: 0.75rem 0;
-}
-
-.stat-item {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-}
-
-.stat-numero {
-    font-size: 1.8rem;
-    font-weight: 700;
-}
-
-/* Verde para "lidos" - reforça a sensação de conquista */
-.stat-lidos {
-    color: #4c9313;
-}
-
-/* Tom neutro para "na fila" - discreto, sem competir com o verde */
-.stat-fila {
-    color: #10100f;
-}
-
-.stat-label {
-    font-size: 0.85rem;
-    color: #5F5E5A;
-}
-
-/* Lista de gêneros, texto menor e mais discreto */
-.stats-generos {
-    font-size: 0.85rem;
-    color: #5F5E5A;
-}
-
-/* ===================== LISTAGEM DE LIVROS (CARDS) ===================== */
-
-/* Grade responsiva: os cards se ajustam automaticamente conforme o espaço */
-#lista-livros {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-}
-
-.livro-card {
-    position: relative;
-    border-radius: 12px;
-    padding: 1rem;
-}
-
-/* Livro já lido: fundo esverdeado suave, borda verde — sensação de conquista */
-.livro-lido {
-    background-color: #F3F9EC;
-    border: 1.5px solid #07f107;
-}
-
-/* Livro ainda não lido: tom neutro, discreto, "esperando a vez" */
-.livro-pendente {
-    background-color: #F4F2EC;
-    border: 0.5px solid #D3D1C7;
-}
-
-/* Selo de conquista (✓) no canto superior direito dos livros lidos */
-.selo-lido {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background-color: #5d921c;
-    color: #fff;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.livro-titulo {
-    font-family: Georgia, serif;
-    font-size: 1rem;
-    font-weight: 500;
-    padding-right: 20px; /* espaço para não colidir com o selo */
-    margin-bottom: 0.25rem;
-}
-
-.livro-info {
-    font-size: 0.8rem;
-    color: #5F5E5A;
-    margin-bottom: 0.6rem;
-}
-
-/* Badge de status: verde para lido, cinza neutro para quero ler */
-.livro-badge {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-bottom: 0.75rem;
-}
-
-.livro-lido .livro-badge {
-    background-color: #639922;
-    color: #fff;
-}
-
-.livro-pendente .livro-badge {
-    background-color: #E5E3DB;
-    color: #5F5E5A;
-}
-
-.livro-acoes {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.livro-acoes button {
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #C4B8A0;
-    background-color: #fff;
-    cursor: pointer;
-}
-
-.livro-acoes button:hover {
-    background-color: #F0E8D8;
-}
-
-/* ===================== FORMULÁRIO DE CADASTRO ===================== */
-
-#form-cadastro {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap; /* quebra linha em telas menores, sem quebrar o layout */
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background-color: #F4EEE0;
-    border-radius: 12px;
-}
-
-#form-cadastro input,
-#form-cadastro select {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #D8CBAE;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    background-color: #fff;
-}
-
-#form-cadastro input:focus,
-#form-cadastro select:focus {
-    outline: none;
-    border-color: #B08858; /* destaque sutil ao focar no campo */
-}
-
-#form-cadastro button {
-    padding: 0.5rem 1.2rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #4A1B0C; /* mesmo marrom do título, reforça identidade visual */
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-#form-cadastro button:hover {
-    background-color: #6B2E15;
-}
-
-/* ===================== POLIMENTO GERAL ===================== */
-
-/* Linha divisória estilizada, combinando com a paleta */
-hr {
-    border: none;
-    border-top: 1px solid #E3D9C6;
-    margin: 2rem 0;
-}
-
-/* Espaçamento extra abaixo do título principal */
-h1 {
-    margin-bottom: 0.25rem;
-}
-
-/* Subtítulo opcional, discreto, logo abaixo do H1 */
-.subtitulo {
-    font-size: 0.9rem;
-    color: #8A8578;
-    margin-bottom: 2rem;
-}
-
-/* Efeito sutil de elevação ao passar o mouse sobre um card */
-.livro-card {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.livro-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(74, 27, 12, 0.08);
-}
-
-/* Espaçamento extra antes da seção "Meus livros" */
-#lista-livros {
-    margin-top: 0.5rem;
-}
-
-.stats-porcentagem {
-    font-size: 0.85rem;
-    color: #4A1B0C;
-    margin-top: 0.5rem;
-}
-
-#consulta-mes-ano {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #E3D9C6;
-    font-size: 0.85rem;
-}
-
-#consulta-mes-ano select,
-#consulta-mes-ano input,
-#consulta-mes-ano button {
-    padding: 0.3rem 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #D8CBAE;
-    margin-right: 0.4rem;
-}
-
-#resultado-mes-ano {
-    margin-top: 0.5rem;
-    font-weight: 500;
-    color: #4A1B0C;
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }

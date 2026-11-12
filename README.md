@@ -4,7 +4,7 @@ Aplicação pessoal para organizar livros e acompanhar a leitura. O projeto comb
 
 ## Objetivo
 
-O acervo ajuda a registrar livros que você quer ler, está lendo ou já concluiu. A versão atual oferece cadastro, organização por gênero, atualização de status e estatísticas básicas. A próxima evolução planejada é uma página dedicada à jornada de leitura, com visualizações e conquistas.
+O acervo ajuda a registrar livros que você quer ler, está lendo ou já concluiu. A versão atual oferece cadastro, organização por gênero, atualização de status e uma página dedicada à jornada de leitura, com visualizações e conquistas.
 
 ## Estado atual do projeto
 
@@ -14,13 +14,14 @@ O acervo ajuda a registrar livros que você quer ler, está lendo ou já conclui
 - Identificador único, status inicial `QUERO_LER` e data de cadastro gerados automaticamente.
 - Prevenção de títulos duplicados, sem diferenciar maiúsculas de minúsculas.
 - Listagem, remoção e atualização do status para `LIDO`, `LENDO` ou `QUERO_LER`.
-- Registro automático da data de conclusão ao marcar um livro como lido.
+- Registro do mês/ano de conclusão sem exigir um dia, tanto no cadastro de livros já lidos quanto ao marcar um livro como lido.
 - Estatísticas de total lido, contagem por gênero e status e percentual dos gêneros entre os livros lidos.
 - Consulta de livros concluídos por mês e por ano.
 - Persistência do acervo em `data/livros.json`.
 - Registro de atividades durante a sessão atual.
 - Menu interativo de terminal e interface web para cadastro e gerenciamento.
-- Interface web com cards de livros, painel de estatísticas e consulta por mês/ano.
+- Interface web separada em **Minha estante** e **Minha jornada**, com cards de livros, formulário de cadastro e painel de jornada.
+- Na jornada: resumo anual real, gráfico mensal, distribuição por gênero, conquistas calculadas a partir do acervo e mensagens de progresso.
 - Validação na API para cadastro, status e parâmetros da consulta mensal/anual.
 - Gravação segura do arquivo JSON por arquivo temporário; em caso de falha, a alteração é revertida em memória e a API informa erro.
 - Renderização dos dados dos livros como texto na interface, sem interpretar título e autor como HTML.
@@ -28,23 +29,24 @@ O acervo ajuda a registrar livros que você quer ler, está lendo ou já conclui
 ### Limitações conhecidas
 
 - O histórico de atividades fica apenas em memória e recomeça quando o programa é reiniciado.
-- A tela atual reúne cadastro, resumo de estatísticas e estante na mesma página.
-- As estatísticas existentes não têm gráficos, metas anuais, conquistas ou uma visão detalhada da jornada.
+- A meta anual ainda é apenas uma indicação de funcionalidade planejada; não pode ser configurada nem acompanhada ainda.
+- Os dados anuais e os gráficos são montados no navegador a partir da lista de livros; ainda não há uma rota da API dedicada ao resumo anual.
 - A aplicação não tem autenticação nem suporte a múltiplos usuários; foi feita para uso local e pessoal.
 - Os testes automatizados existentes cobrem parte dos cálculos de estatísticas. Ainda falta cobertura para API, persistência e serviços do acervo.
 
-## Próxima evolução: página “Minha jornada”
+## Jornada de leitura: “Minha jornada”
 
-O mockup [mockup-minha-jornada.svg](mockup-minha-jornada.svg) apresenta a direção visual aprovada: manter a paleta creme, marrom e verde e separar a experiência em **Minha estante** e **Minha jornada**. O mockup é apenas uma proposta visual; nenhum dos componentes novos descritos abaixo está implementado ainda.
+O mockup [mockup-minha-jornada.svg](mockup-minha-jornada.svg) apresenta a direção visual aprovada: manter a paleta creme, marrom e verde e separar a experiência em **Minha estante** e **Minha jornada**. A primeira etapa já implementa essa separação e os componentes ligados aos dados disponíveis.
 
-A página de jornada deverá tornar as estatísticas mais visuais e divertidas, incluindo:
+A página de jornada torna as estatísticas mais visuais e divertidas, incluindo:
 
-- Resumo do ano com livros concluídos, progresso de meta e ritmo de leitura.
+- Resumo do ano com livros concluídos e mês mais produtivo.
 - Gráfico mensal de livros concluídos, com seleção de ano.
 - Distribuição dos livros lidos por gênero em um gráfico visual.
-- Conquistas por marcos de leitura, como concluir 25 livros ou explorar vários gêneros.
+- Conquistas por marcos de leitura, como concluir 25 livros, explorar gêneros ou manter ritmo em meses diferentes.
 - Um destaque motivador ligado ao progresso do leitor.
 - Registro do mês e do ano em que cada livro foi concluído, inclusive quando for cadastrado depois da leitura.
+- Meta anual configurável com acompanhamento de progresso.
 
 Páginas lidas e capas não fazem parte da primeira versão planejada: hoje esses dados não são armazenados no modelo `Livro`. Podemos decidir depois se vale adicioná-los.
 
@@ -52,42 +54,35 @@ Páginas lidas e capas não fazem parte da primeira versão planejada: hoje esse
 
 O trabalho será feito em etapas pequenas. Após cada etapa, o resultado poderá ser revisado antes de avançar.
 
-### Etapa 1 — Separar a navegação e preparar a página
+### Etapa 1 — Navegação, estante e primeira jornada (implementada)
 
-- Criar navegação entre **Minha estante** e **Minha jornada**.
-- Manter cadastro e gerenciamento de livros na estante.
-- Criar o esqueleto responsivo da jornada, seguindo o mockup e a identidade visual atual.
-- Nesta etapa, deixar os espaços de estatísticas preparados; não inventar números para preencher os componentes.
-- Estender o cadastro com mês e ano opcionais de conclusão. Se forem informados, o livro entra como lido; se ficarem vazios, continua na fila de leitura.
+- Criada navegação entre **Minha estante** e **Minha jornada**.
+- Mantidos cadastro e gerenciamento de livros na estante.
+- Criada a página responsiva da jornada, seguindo o mockup e a identidade visual atual.
+- Resumo, gráfico mensal, gêneros e conquistas usam os dados existentes; quando não há dados, a página mostra estados vazios e valores zero reais.
+- Cadastro aceita mês e ano opcionais de conclusão. Se forem informados, o livro entra como lido; sem eles, fica na fila.
+- O mês/ano é salvo sem atribuir um dia inventado. Livros antigos com data completa continuam compatíveis.
 
-### Etapa 2 — Preparar os dados anuais
+### Etapa 2 — Consolidar os dados anuais na API (próxima)
 
-- Definir a resposta da API necessária para obter os totais de livros concluídos por mês em um ano.
-- Aceitar mês/ano de conclusão informado no cadastro e também ao marcar um livro existente como lido.
-- Registrar a precisão de mês e ano sem inventar um dia de conclusão; compatibilizar essa informação com a data completa já usada pelos livros existentes.
-- Validar o ano solicitado e cobrir os casos sem livros concluídos.
+- Criar uma rota de resumo anual para retornar totais mensais e distribuição por gênero, evitando recalcular tudo no navegador.
+- Validar o ano solicitado e tratar anos sem livros concluídos.
+- Ligar os componentes atuais à resposta dessa rota.
 
-### Etapa 3 — Construir os gráficos com dados reais
+### Etapa 3 — Meta anual configurável
 
-- Ligar o resumo anual e o gráfico mensal à API.
-- Garantir que o mês e o ano informados no cadastro alimentem corretamente o gráfico e os totais anuais.
-- Montar a distribuição por gênero usando os livros concluídos no período selecionado.
-- Adicionar estados de carregamento, erro e ausência de dados.
+- Definir como configurar e guardar a meta anual.
+- Mostrar progresso real da meta na jornada.
 
-### Etapa 4 — Metas e conquistas
+### Etapa 4 — Revisão e cobertura
 
-- Definir como a meta anual será configurada e guardada.
-- Calcular progresso e desbloquear conquistas a partir dos dados reais do acervo.
-- Exibir mensagens motivadoras sem apresentar marcos que o leitor ainda não alcançou.
-
-### Etapa 5 — Revisão final
-
-- Ajustar a apresentação para telas menores e acessibilidade básica.
-- Atualizar documentação e ampliar os testes dos cálculos e da API.
+- Revisar a apresentação em telas menores e acessibilidade básica.
+- Ampliar os testes dos cálculos, da API e da persistência.
+- Atualizar a documentação a cada entrega.
 
 ### Próximo passo
 
-Começar pela **Etapa 1**, implementando a navegação e a estrutura visual das duas páginas. Depois de revisar essa etapa, decidiremos juntos se seguimos para os dados anuais ou se fazemos algum ajuste no layout.
+A **Etapa 1 está implementada**. O próximo passo planejado é a **Etapa 2**: criar uma rota de resumo anual e ligar a jornada a esses dados. Antes de avançar, revise a interface e esta etapa; podemos ajustar o layout ou o comportamento do cadastro conforme seu feedback.
 
 ## Tecnologias
 
@@ -148,14 +143,6 @@ A API inicia em `http://localhost:7000`. Com ela ativa, abra `frontend/index.htm
 ## API disponível
 
 | Método | Rota | Descrição |
-<<<<<<< Updated upstream
-|--------|------|-----------|
-| GET    | \`/livros\` | Lista todos os livros cadastrados |
-| POST   | \`/livros\` | Cadastra um novo livro |
-| PUT    | \`/livros/{id}/status\` | Atualiza o status de leitura de um livro |
-| DELETE | \`/livros/{id}\` | Remove um livro do acervo |
-| GET    | \`/estatisticas\` | Retorna estatísticas de leitura (total lido, por gênero, por status) |
-=======
 |---|---|---|
 | `GET` | `/livros` | Lista os livros cadastrados. |
 | `POST` | `/livros` | Cadastra um livro; título, autor e gênero são obrigatórios. |
@@ -163,7 +150,6 @@ A API inicia em `http://localhost:7000`. Com ela ativa, abra `frontend/index.htm
 | `DELETE` | `/livros/{id}` | Remove um livro. |
 | `GET` | `/estatisticas` | Retorna totais por status e gênero, total lido e percentual por gênero entre lidos. |
 | `GET` | `/estatisticas/mes-ano?mes=8&ano=2026` | Retorna os totais concluídos no mês e no ano informados. |
->>>>>>> Stashed changes
 
 Os livros são salvos em `data/livros.json`. O histórico de atividades não é persistido.
 
@@ -175,21 +161,6 @@ Para executar os testes automatizados:
 mvn test
 ```
 
-<<<<<<< Updated upstream
-## 🔧 Melhorias Futuras
-
-- [ ] Validação de entrada mais robusta na API — atualmente, se o campo `genero` enviado no `POST /livros` não corresponder exatamente (case-sensitive) a uma constante do enum `Genero`, o campo fica silenciosamente `null` em vez de retornar um erro claro. No front-end isso já é mitigado com um `<select>` de opções fixas, mas a API em si ainda não valida. Próximo passo: validar a entrada e responder com `400 Bad Request` quando o gênero for inválido.
-- [ ] Estatísticas por mês/ano, com metas pessoais de leitura
-- [ ] Gráfico de leitura anual e percentual de livros lidos por gênero
-- [ ] Testes automatizados (JUnit)
-- [ ] Autenticação na API
-- [ ] Deploy da API e do front-end (Render/Railway/Vercel)
-
-## 📝 Licença
-
-Este projeto é de uso livre para fins de estudo e portfólio.
-=======
 ## Licença
 
 Projeto de uso livre para fins de estudo e portfólio.
->>>>>>> Stashed changes
