@@ -2,8 +2,11 @@ package acervo.api;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -66,6 +69,42 @@ public class ApiServer {
             var livros = acervoService.getLivros();
             ctx.contentType("application/json");
             ctx.result(gson.toJson(livros));
+        });
+
+        // ===== [GET] /estatisticas/ano?ano=2026 -> resumo completo de um ano =====
+        app.get("/estatisticas/ano", ctx -> {
+            String anoParam = ctx.queryParam("ano");
+            if (anoParam == null || anoParam.isBlank()) {
+                enviarErro(ctx, 400, "O parâmetro 'ano' é obrigatório. Exemplo: /estatisticas/ano?ano=2026");
+                return;
+            }
+
+            final int ano;
+            try {
+                ano = Integer.parseInt(anoParam);
+            } catch (NumberFormatException e) {
+                enviarErro(ctx, 400, "O parâmetro 'ano' deve ser um número inteiro.");
+                return;
+            }
+            if (ano < 1) {
+                enviarErro(ctx, 400, "O ano deve ser positivo.");
+                return;
+            }
+
+            var livros = acervoService.getLivros();
+            List<Map<String, Integer>> porMes = new ArrayList<>();
+            var contagemMensal = estatisticasService.contarLidosPorMesNoAno(livros, ano);
+            for (var entrada : contagemMensal.entrySet()) {
+                porMes.add(Map.of("mes", entrada.getKey(), "total", entrada.getValue()));
+            }
+
+            var resposta = new HashMap<String, Object>();
+            resposta.put("ano", ano);
+            resposta.put("totalLido", estatisticasService.totalLidoNoAno(livros, ano));
+            resposta.put("porMes", porMes);
+            resposta.put("porGenero", estatisticasService.contarLidosPorGeneroNoAno(livros, ano));
+            ctx.contentType("application/json");
+            ctx.result(gson.toJson(resposta));
         });
 
         // ===== [GET] /estatisticas/mes-ano -> retorna total de livros lidos em um mês/ano específicos =====

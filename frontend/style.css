@@ -17,6 +17,9 @@ body { margin: 0; background: var(--paper); color: var(--text); font-family: "Se
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 [hidden] { display: none !important; }
+.skip-link { position: fixed; top: 10px; left: 10px; z-index: 20; padding: 10px 14px; border-radius: 8px; color: #fff; background: var(--ink); transform: translateY(-160%); }
+.skip-link:focus { transform: translateY(0); }
+a:focus-visible, select:focus-visible, input:focus-visible, button:focus-visible { outline: 3px solid #5d921c; outline-offset: 3px; }
 
 .topbar { height: 76px; padding: 0 max(28px, calc((100vw - 1240px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 24px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .brand { color: var(--ink); font: 24px Georgia, "Times New Roman", serif; text-decoration: none; white-space: nowrap; }
@@ -79,6 +82,22 @@ h2, h3, p { margin-top: 0; }
 .summary-card > strong { display: block; color: var(--ink); font: 29px Georgia, serif; }
 .summary-card .muted, .panel .muted { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
 .coming-soon { font-size: 23px !important; }
+.goal-card { display: flex; flex-direction: column; }
+.goal-description { margin: 6px 0 12px; color: var(--muted); font-size: 13px; }
+.goal-action, .goal-edit { align-self: start; padding: 7px 11px; font-size: 12px; }
+.goal-numbers { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 5px 0 7px; }
+.goal-numbers strong { color: var(--ink); font: 26px Georgia, serif; }
+.goal-numbers span { color: var(--green); font-size: 14px; font-weight: 750; }
+#meta-progresso { width: 100%; height: 10px; overflow: hidden; border: 0; border-radius: 10px; appearance: none; background: #eee7da; }
+#meta-progresso::-webkit-progress-bar { border-radius: 10px; background: #eee7da; }
+#meta-progresso::-webkit-progress-value { border-radius: 10px; background: #75a53b; transition: width .25s ease; }
+#meta-progresso::-moz-progress-bar { border-radius: 10px; background: #75a53b; }
+.goal-card .muted { min-height: 18px; }
+.goal-form { display: grid; gap: 10px; margin-top: 7px; }
+.goal-form .field { gap: 5px; font-size: 12px; }
+.goal-form .field input { min-height: 39px; padding: 7px 10px; }
+.goal-form-actions { display: flex; align-items: center; gap: 5px; }
+.goal-form-actions button { padding: 7px 10px; font-size: 12px; }
 .journey-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 18px; }
 .panel { padding: 23px 25px; }
 .panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; }

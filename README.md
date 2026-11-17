@@ -17,11 +17,13 @@ O acervo ajuda a registrar livros que você quer ler, está lendo ou já conclui
 - Registro do mês/ano de conclusão sem exigir um dia, tanto no cadastro de livros já lidos quanto ao marcar um livro como lido.
 - Estatísticas de total lido, contagem por gênero e status e percentual dos gêneros entre os livros lidos.
 - Consulta de livros concluídos por mês e por ano.
+- Resumo anual da API com total concluído, doze totais mensais e livros concluídos por gênero.
 - Persistência do acervo em `data/livros.json`.
 - Registro de atividades durante a sessão atual.
 - Menu interativo de terminal e interface web para cadastro e gerenciamento.
 - Interface web separada em **Minha estante** e **Minha jornada**, com cards de livros, formulário de cadastro e painel de jornada.
 - Na jornada: resumo anual real, gráfico mensal, distribuição por gênero, conquistas calculadas a partir do acervo e mensagens de progresso.
+- Meta anual configurável, com barra de progresso e armazenamento local separado por ano no navegador.
 - Validação na API para cadastro, status e parâmetros da consulta mensal/anual.
 - Gravação segura do arquivo JSON por arquivo temporário; em caso de falha, a alteração é revertida em memória e a API informa erro.
 - Renderização dos dados dos livros como texto na interface, sem interpretar título e autor como HTML.
@@ -29,10 +31,10 @@ O acervo ajuda a registrar livros que você quer ler, está lendo ou já conclui
 ### Limitações conhecidas
 
 - O histórico de atividades fica apenas em memória e recomeça quando o programa é reiniciado.
-- A meta anual ainda é apenas uma indicação de funcionalidade planejada; não pode ser configurada nem acompanhada ainda.
-- Os dados anuais e os gráficos são montados no navegador a partir da lista de livros; ainda não há uma rota da API dedicada ao resumo anual.
+- A meta anual fica salva no armazenamento local do navegador; não é sincronizada entre navegadores ou dispositivos.
+- As conquistas são calculadas no navegador a partir dos livros carregados.
 - A aplicação não tem autenticação nem suporte a múltiplos usuários; foi feita para uso local e pessoal.
-- Os testes automatizados existentes cobrem parte dos cálculos de estatísticas. Ainda falta cobertura para API, persistência e serviços do acervo.
+- Os testes cobrem parte dos cálculos de estatísticas e do resumo anual; ainda falta cobertura automatizada dos endpoints e da persistência JSON.
 
 ## Jornada de leitura: “Minha jornada”
 
@@ -63,26 +65,28 @@ O trabalho será feito em etapas pequenas. Após cada etapa, o resultado poderá
 - Cadastro aceita mês e ano opcionais de conclusão. Se forem informados, o livro entra como lido; sem eles, fica na fila.
 - O mês/ano é salvo sem atribuir um dia inventado. Livros antigos com data completa continuam compatíveis.
 
-### Etapa 2 — Consolidar os dados anuais na API (próxima)
+### Etapa 2 — Consolidar os dados anuais na API (implementada)
 
-- Criar uma rota de resumo anual para retornar totais mensais e distribuição por gênero, evitando recalcular tudo no navegador.
-- Validar o ano solicitado e tratar anos sem livros concluídos.
-- Ligar os componentes atuais à resposta dessa rota.
+- Criada a rota `GET /estatisticas/ano?ano=2026`, que retorna total anual, os doze meses e a distribuição por gênero.
+- A rota valida o ano e retorna meses com total zero quando não há livros concluídos.
+- Resumo, gráfico mensal e distribuição por gênero da jornada agora usam a resposta da API.
 
-### Etapa 3 — Meta anual configurável
+### Etapa 3 — Meta anual configurável (implementada)
 
-- Definir como configurar e guardar a meta anual.
-- Mostrar progresso real da meta na jornada.
+- Permitir definir e ajustar uma meta por ano.
+- Salvar a meta no navegador e restaurá-la ao abrir a jornada novamente.
+- Mostrar quantidade concluída, percentual, barra de progresso, livros restantes ou mensagem de meta alcançada.
 
-### Etapa 4 — Revisão e cobertura
+### Etapa 4 — Revisão e cobertura (implementada)
 
-- Revisar a apresentação em telas menores e acessibilidade básica.
-- Ampliar os testes dos cálculos, da API e da persistência.
-- Atualizar a documentação a cada entrega.
+- Revisados os layouts para telas menores e a navegação por teclado entre as seções.
+- Incluído atalho para o conteúdo principal e descrições acessíveis para os gráficos e atualizações do resumo.
+- Adicionados testes para contagem anual por mês e gênero, incluindo meses vazios, status diferentes e anos distintos.
+- Atualizada a documentação para registrar o estado final das quatro etapas.
 
 ### Próximo passo
 
-A **Etapa 1 está implementada**. O próximo passo planejado é a **Etapa 2**: criar uma rota de resumo anual e ligar a jornada a esses dados. Antes de avançar, revise a interface e esta etapa; podemos ajustar o layout ou o comportamento do cadastro conforme seu feedback.
+As quatro etapas planejadas estão implementadas. O acervo está pronto para revisão e uso local; as limitações atuais são a ausência de autenticação, a sincronização da meta anual entre dispositivos e testes automatizados de API e persistência.
 
 ## Tecnologias
 
@@ -109,7 +113,7 @@ A **Etapa 1 está implementada**. O próximo passo planejado é a **Etapa 2**: c
 │   │   ├── service/               # Regras, estatísticas e JSON
 │   │   └── Main.java              # Menu de terminal
 │   └── test/java/                 # Testes automatizados
-├── mockup-minha-jornada.svg       # Proposta visual da próxima evolução
+├── mockup-minha-jornada.svg       # Referência visual da jornada
 ├── data/                          # Criado em execução; ignorado pelo Git
 ├── pom.xml
 └── README.md
@@ -150,6 +154,7 @@ A API inicia em `http://localhost:7000`. Com ela ativa, abra `frontend/index.htm
 | `DELETE` | `/livros/{id}` | Remove um livro. |
 | `GET` | `/estatisticas` | Retorna totais por status e gênero, total lido e percentual por gênero entre lidos. |
 | `GET` | `/estatisticas/mes-ano?mes=8&ano=2026` | Retorna os totais concluídos no mês e no ano informados. |
+| `GET` | `/estatisticas/ano?ano=2026` | Retorna o total concluído no ano, os totais por mês e por gênero. |
 
 Os livros são salvos em `data/livros.json`. O histórico de atividades não é persistido.
 
@@ -160,6 +165,8 @@ Para executar os testes automatizados:
 ```bash
 mvn test
 ```
+
+A suíte inclui testes de resumo anual por mês e gênero, com casos de ano diferente, status não concluído e ano sem leituras. Endpoints da API e persistência JSON ainda não têm testes automatizados.
 
 ## Licença
 

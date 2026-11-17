@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
 
 import acervo.model.Genero;
 import acervo.model.Livro;
@@ -112,5 +113,32 @@ public class EstatisticasService {
         }
 
         return total;
+    }
+
+    /** Retorna os doze meses do ano, inclusive os meses sem livros concluídos. */
+    public Map<Integer, Integer> contarLidosPorMesNoAno(List<Livro> livros, int ano) {
+        Map<Integer, Integer> contagem = new LinkedHashMap<>();
+        for (int mes = 1; mes <= 12; mes++) contagem.put(mes, 0);
+
+        for (Livro livro : livros) {
+            YearMonth conclusao = livro.getMesAnoConclusao();
+            if (livro.getStatus() == StatusLeitura.LIDO && conclusao != null && conclusao.getYear() == ano) {
+                contagem.compute(conclusao.getMonthValue(), (mes, total) -> total + 1);
+            }
+        }
+        return contagem;
+    }
+
+    /** Conta os livros lidos por gênero no ano informado. */
+    public Map<Genero, Integer> contarLidosPorGeneroNoAno(List<Livro> livros, int ano) {
+        Map<Genero, Integer> contagem = new LinkedHashMap<>();
+        for (Livro livro : livros) {
+            YearMonth conclusao = livro.getMesAnoConclusao();
+            if (livro.getStatus() == StatusLeitura.LIDO && conclusao != null && conclusao.getYear() == ano) {
+                Genero genero = livro.getGenero();
+                contagem.put(genero, contagem.getOrDefault(genero, 0) + 1);
+            }
+        }
+        return contagem;
     }
 }

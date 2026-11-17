@@ -1,9 +1,11 @@
 package acervo.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -126,5 +128,44 @@ public class EstatisticasServiceTest {
 
         // Só o "Livro Agosto" deve ser contado
         assertEquals(1, resultado);
+    }
+
+    @Test
+    public void resumoAnualDeveContarApenasLeiturasConcluidasNoAnoEPreencherOsDozeMeses() {
+        Livro janeiro = criarLivro("Livro de janeiro", Genero.FICCAO, StatusLeitura.LIDO);
+        janeiro.setMesAnoConclusao(YearMonth.of(2026, 1));
+        Livro janeiroDois = criarLivro("Outro de janeiro", Genero.ROMANCE, StatusLeitura.LIDO);
+        janeiroDois.setMesAnoConclusao(YearMonth.of(2026, 1));
+        Livro fevereiro = criarLivro("Livro de fevereiro", Genero.FICCAO, StatusLeitura.LIDO);
+        fevereiro.setMesAnoConclusao(YearMonth.of(2026, 2));
+        Livro outroAno = criarLivro("Livro de outro ano", Genero.POLITICA, StatusLeitura.LIDO);
+        outroAno.setMesAnoConclusao(YearMonth.of(2025, 1));
+        Livro aindaLendo = criarLivro("Livro em andamento", Genero.ECONOMIA, StatusLeitura.LENDO);
+        aindaLendo.setMesAnoConclusao(YearMonth.of(2026, 3));
+
+        List<Livro> livros = List.of(janeiro, janeiroDois, fevereiro, outroAno, aindaLendo);
+
+        Map<Integer, Integer> porMes = estatisticasService.contarLidosPorMesNoAno(livros, 2026);
+        Map<Genero, Integer> porGenero = estatisticasService.contarLidosPorGeneroNoAno(livros, 2026);
+
+        assertEquals(12, porMes.size());
+        assertEquals(Integer.valueOf(2), porMes.get(1));
+        assertEquals(Integer.valueOf(1), porMes.get(2));
+        assertEquals(Integer.valueOf(0), porMes.get(3));
+        assertEquals(3, estatisticasService.totalLidoNoAno(livros, 2026));
+        assertEquals(Integer.valueOf(2), porGenero.get(Genero.FICCAO));
+        assertEquals(Integer.valueOf(1), porGenero.get(Genero.ROMANCE));
+        assertFalse(porGenero.containsKey(Genero.POLITICA));
+        assertFalse(porGenero.containsKey(Genero.ECONOMIA));
+    }
+
+    @Test
+    public void resumoAnualSemLeiturasDeveRetornarDozeMesesZeradosESemGeneros() {
+        Map<Integer, Integer> porMes = estatisticasService.contarLidosPorMesNoAno(List.of(), 2026);
+        Map<Genero, Integer> porGenero = estatisticasService.contarLidosPorGeneroNoAno(List.of(), 2026);
+
+        assertEquals(12, porMes.size());
+        assertTrue(porMes.values().stream().allMatch(total -> total == 0));
+        assertTrue(porGenero.isEmpty());
     }
 }

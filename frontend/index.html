@@ -8,16 +8,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
     <header class="topbar">
         <a class="brand" href="#estante" aria-label="Meu Acervo de Leitura, início">Meu Acervo de Leitura</a>
-        <nav class="main-nav" aria-label="Navegação principal">
-            <button class="nav-link active" type="button" data-view="estante">Minha estante</button>
-            <button class="nav-link" type="button" data-view="jornada">Minha jornada</button>
+        <nav class="main-nav" role="tablist" aria-label="Seções do acervo">
+            <button class="nav-link active" id="tab-estante" type="button" role="tab" aria-controls="view-estante" aria-selected="true" tabindex="0" data-view="estante">Minha estante</button>
+            <button class="nav-link" id="tab-jornada" type="button" role="tab" aria-controls="view-jornada" aria-selected="false" tabindex="-1" data-view="jornada">Minha jornada</button>
         </nav>
     </header>
 
-    <main>
-        <section id="view-estante" class="view">
+    <main id="main-content" tabindex="-1">
+        <section id="view-estante" class="view" role="tabpanel" aria-labelledby="tab-estante" tabindex="0">
             <div class="page-heading">
                 <p class="eyebrow">SEU CANTINHO DE LEITURA</p>
                 <h1>Minha estante</h1>
@@ -61,16 +62,37 @@
             </section>
         </section>
 
-        <section id="view-jornada" class="view" hidden>
+        <section id="view-jornada" class="view" role="tabpanel" aria-labelledby="tab-jornada" tabindex="0" hidden>
             <div class="page-heading journey-heading">
                 <div><p class="eyebrow">UM CAPÍTULO DE CADA VEZ</p><h1>Sua leitura está ganhando ritmo.</h1><p class="subtitulo">Uma visão leve das histórias que você concluiu e das que ainda vêm pela frente.</p></div>
                 <label class="year-picker"><span>Ano da jornada</span><select id="select-ano-jornada" aria-label="Selecionar ano"></select></label>
             </div>
 
             <div class="journey-summary">
-                <article class="summary-card summary-featured"><p class="eyebrow">LIVROS CONCLUÍDOS</p><div class="summary-line"><strong id="total-lidos-ano">—</strong><span id="label-lidos-ano">neste ano</span></div><p id="resumo-lidos-ano" class="muted">Carregando sua jornada...</p></article>
-                <article class="summary-card"><p class="eyebrow">MÊS EM DESTAQUE</p><strong id="mes-destaque">—</strong><p id="resumo-mes-destaque" class="muted">Vamos descobrir juntos.</p></article>
-                <article class="summary-card"><p class="eyebrow">META ANUAL</p><strong class="coming-soon">Próxima etapa</strong><p class="muted">Vamos preparar sua meta de leitura depois dos gráficos.</p></article>
+                <article class="summary-card summary-featured"><p class="eyebrow">LIVROS CONCLUÍDOS</p><div class="summary-line"><strong id="total-lidos-ano">—</strong><span id="label-lidos-ano">neste ano</span></div><p id="resumo-lidos-ano" class="muted" aria-live="polite">Carregando sua jornada...</p></article>
+                <article class="summary-card"><p class="eyebrow">MÊS EM DESTAQUE</p><strong id="mes-destaque" aria-live="polite">—</strong><p id="resumo-mes-destaque" class="muted">Vamos descobrir juntos.</p></article>
+                <article class="summary-card goal-card">
+                    <p class="eyebrow">META ANUAL</p>
+                    <div id="meta-sem-configurar">
+                        <p class="goal-description">Escolha quantos livros quer concluir neste ano.</p>
+                        <button class="button-secondary goal-action" type="button" id="abrir-editor-meta">Definir minha meta</button>
+                    </div>
+                    <div id="meta-configurada" hidden>
+                        <div class="goal-numbers"><strong id="meta-contagem">0 / 0</strong><span id="meta-percentual">0%</span></div>
+                        <progress id="meta-progresso" max="100" value="0" aria-label="Progresso da meta anual"></progress>
+                        <p id="meta-mensagem" class="muted" aria-live="polite"></p>
+                        <button class="button-quiet goal-edit" type="button" id="editar-meta">Ajustar meta</button>
+                    </div>
+                    <form id="form-meta" class="goal-form" hidden>
+                        <label class="field" for="input-meta">Livros que deseja concluir em <span id="meta-ano-label"></span>
+                            <input id="input-meta" type="number" min="1" max="5000" step="1" placeholder="Ex.: 24" required>
+                        </label>
+                        <div class="goal-form-actions">
+                            <button class="button-primary" type="submit">Salvar meta</button>
+                            <button class="button-quiet" type="button" id="cancelar-meta">Cancelar</button>
+                        </div>
+                    </form>
+                </article>
             </div>
 
             <div class="journey-grid">
@@ -86,9 +108,9 @@
         </section>
     </main>
 
-    <dialog id="dialog-conclusao" class="completion-dialog">
+    <dialog id="dialog-conclusao" class="completion-dialog" aria-labelledby="titulo-dialog-conclusao">
         <form id="form-conclusao">
-            <p class="eyebrow">MAIS UM LIVRO CONCLUÍDO</p><h2>Quando você terminou?</h2><p class="muted">Escolha mês e ano. Se não lembrar o mês, pode cancelar e marcar como lido com a data atual.</p>
+            <p class="eyebrow">MAIS UM LIVRO CONCLUÍDO</p><h2 id="titulo-dialog-conclusao">Quando você terminou?</h2><p class="muted">O mês e o ano atuais já vêm selecionados. Ajuste-os se a leitura foi concluída em outro período.</p>
             <label class="field"><span>Mês</span><select id="dialog-mes" required></select></label>
             <label class="field"><span>Ano</span><input id="dialog-ano" type="number" min="1900" max="2100" required></label>
             <div class="dialog-actions"><button class="button-secondary" type="button" id="cancelar-conclusao">Cancelar</button><button class="button-primary" type="submit">Salvar leitura</button></div>
