@@ -8,4 +8,6 @@ import acervo.model.StatusLeitura;
  */
 public class AtualizarStatusRequest {
     public StatusLeitura status;
+    public Integer mesConclusao;
+    public Integer anoConclusao;
 }

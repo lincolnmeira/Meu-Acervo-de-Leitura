@@ -3,6 +3,7 @@ package acervo.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.YearMonth;
 
 import acervo.model.Genero;
 import acervo.model.Livro;
@@ -86,9 +87,9 @@ public class EstatisticasService {
         int total = 0;
 
         for (Livro livro : livros) {
-            if (livro.getStatus() == StatusLeitura.LIDO && livro.getDataConclusao() != null) {
-                if (livro.getDataConclusao().getMonthValue() == mes
-                        && livro.getDataConclusao().getYear() == ano) {
+            YearMonth conclusao = livro.getMesAnoConclusao();
+            if (livro.getStatus() == StatusLeitura.LIDO && conclusao != null) {
+                if (conclusao.getMonthValue() == mes && conclusao.getYear() == ano) {
                     total++;
                 }
             }
@@ -102,8 +103,9 @@ public class EstatisticasService {
         int total = 0;
 
         for (Livro livro : livros) {
-            if (livro.getStatus() == StatusLeitura.LIDO && livro.getDataConclusao() != null) {
-                if (livro.getDataConclusao().getYear() == ano) {
+            YearMonth conclusao = livro.getMesAnoConclusao();
+            if (livro.getStatus() == StatusLeitura.LIDO && conclusao != null) {
+                if (conclusao.getYear() == ano) {
                     total++;
                 }
             }

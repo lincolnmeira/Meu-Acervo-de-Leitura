@@ -1,6 +1,7 @@
 package acervo.api;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -15,6 +16,7 @@ import acervo.model.Livro;
 import acervo.service.AcervoService;
 import acervo.service.EstatisticasService;
 import acervo.service.LocalDateAdapter;
+import acervo.service.YearMonthAdapter;
 
 /**
  * Classe responsável por expor o AcervoService como uma API REST,
@@ -33,6 +35,7 @@ public class ApiServer {
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .registerTypeAdapter(YearMonth.class, new YearMonthAdapter())
                 .create();
 
         this.app = Javalin.create(config -> {
@@ -130,7 +133,21 @@ public class ApiServer {
                 return;
             }
 
+            if ((dados.mesConclusao == null) != (dados.anoConclusao == null)) {
+                enviarErro(ctx, 400, "Informe mês e ano de conclusão juntos.");
+                return;
+            }
+            if (dados.mesConclusao != null && (dados.mesConclusao < 1 || dados.mesConclusao > 12
+                    || dados.anoConclusao < 1)) {
+                enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                return;
+            }
+
             Livro novoLivro = new Livro(dados.titulo, dados.autor, dados.genero);
+            if (dados.mesConclusao != null) {
+                novoLivro.setStatus(acervo.model.StatusLeitura.LIDO);
+                novoLivro.setMesAnoConclusao(YearMonth.of(dados.anoConclusao, dados.mesConclusao));
+            }
             boolean adicionado;
             try {
                 adicionado = acervoService.adicionarLivro(novoLivro);
@@ -174,8 +191,19 @@ public class ApiServer {
                 enviarErro(ctx, 400, "O campo 'status' é obrigatório e deve ser válido.");
                 return;
             }
+            if ((dados.mesConclusao == null) != (dados.anoConclusao == null)) {
+                enviarErro(ctx, 400, "Informe mês e ano de conclusão juntos.");
+                return;
+            }
+            if (dados.mesConclusao != null && (dados.mesConclusao < 1 || dados.mesConclusao > 12
+                    || dados.anoConclusao < 1)) {
+                enviarErro(ctx, 400, "O mês deve estar entre 1 e 12 e o ano deve ser positivo.");
+                return;
+            }
+            YearMonth conclusao = dados.mesConclusao == null ? null
+                    : YearMonth.of(dados.anoConclusao, dados.mesConclusao);
             try {
-                acervoService.atualizarStatus(livro, dados.status);
+                acervoService.atualizarStatus(livro, dados.status, conclusao);
             } catch (IllegalStateException e) {
                 enviarErro(ctx, 500, "Não foi possível salvar a alteração. Tente novamente.");
                 return;

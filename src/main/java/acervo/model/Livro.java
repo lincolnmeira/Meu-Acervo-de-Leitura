@@ -1,6 +1,7 @@
 package acervo.model;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.UUID;
 
 /**
@@ -18,6 +19,7 @@ public class Livro {
     private int nota;
     private LocalDate dataCadastro;
     private LocalDate dataConclusao; // preenchida só quando status vira Lido
+    private YearMonth mesAnoConclusao; // precisão de mês para leituras informadas retroativamente
 
     // ===== CONSTRUTOR =====
     // Gera id automático, status inicial fixo (Quero_ler) e data de cadastro = hoje
@@ -88,5 +90,16 @@ public class Livro {
 
     public void setDataConclusao(LocalDate dataConclusao) {
         this.dataConclusao = dataConclusao;
+        this.mesAnoConclusao = dataConclusao == null ? null : YearMonth.from(dataConclusao);
+    }
+
+    public YearMonth getMesAnoConclusao() {
+        if (mesAnoConclusao != null) return mesAnoConclusao;
+        return dataConclusao == null ? null : YearMonth.from(dataConclusao);
+    }
+
+    public void setMesAnoConclusao(YearMonth mesAnoConclusao) {
+        this.mesAnoConclusao = mesAnoConclusao;
+        this.dataConclusao = null;
     }
 }

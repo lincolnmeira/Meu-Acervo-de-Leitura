@@ -1,5 +1,6 @@
 package acervo.service;
 
+import java.time.YearMonth;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
@@ -73,18 +74,29 @@ public class AcervoService {
 
     // Atualiza o status; se virar LIDO, marca a dataConclusao automaticamente
     public void atualizarStatus(Livro livro, StatusLeitura status) {
+        atualizarStatus(livro, status, status == StatusLeitura.LIDO ? YearMonth.now() : null);
+    }
+
+    public void atualizarStatus(Livro livro, StatusLeitura status, YearMonth mesAnoConclusao) {
         if (livro == null || status == null || !livros.contains(livro)) {
             throw new IllegalArgumentException("Livro e status válidos são obrigatórios.");
         }
         StatusLeitura statusAnterior = livro.getStatus();
         LocalDate dataConclusaoAnterior = livro.getDataConclusao();
+        YearMonth mesAnoAnterior = livro.getMesAnoConclusao();
         livro.setStatus(status);
-        livro.setDataConclusao(status == StatusLeitura.LIDO ? LocalDate.now() : null);
+
+        if (status == StatusLeitura.LIDO) {
+            livro.setMesAnoConclusao(mesAnoConclusao == null ? YearMonth.now() : mesAnoConclusao);
+        } else {
+            livro.setMesAnoConclusao(null);
+        }
         try {
             arquivoJsonService.salvar(livros);
         } catch (RuntimeException e) {
             livro.setStatus(statusAnterior);
             livro.setDataConclusao(dataConclusaoAnterior);
+            if (dataConclusaoAnterior == null) livro.setMesAnoConclusao(mesAnoAnterior);
             throw e;
         }
         logService.registrarAcao(new RegistroAtividade(

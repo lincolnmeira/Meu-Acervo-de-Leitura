@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1120" viewBox="0 0 1440 1120">
+  <defs>
+    <style>
+      .sans{font-family:Arial,Helvetica,sans-serif}.serif{font-family:Georgia,'Times New Roman',serif}
+      .ink{fill:#3d1b10}.muted{fill:#81796e}.green{fill:#5d921c}.cream{fill:#fbf6ee}
+      .card{fill:#fffdf9;stroke:#e9dfcf;stroke-width:1.5}.label{font-size:15px;letter-spacing:1.2px;font-weight:700;fill:#81796e}
+    </style>
+  </defs>
+  <rect width="1440" height="1120" fill="#fbf6ee"/>
+  <rect x="0" y="0" width="1440" height="80" fill="#fffdf9"/>
+  <path d="M0 79.5H1440" stroke="#e9dfcf"/>
+  <text x="100" y="49" class="serif ink" font-size="27">Meu Acervo de Leitura</text>
+  <rect x="980" y="17" width="152" height="46" rx="23" fill="#f4eee0"/>
+  <text x="1056" y="46" text-anchor="middle" class="sans ink" font-size="15">Minha estante</text>
+  <rect x="1143" y="17" width="171" height="46" rx="23" fill="#4a1b0c"/>
+  <text x="1228" y="46" text-anchor="middle" class="sans" fill="#fff" font-size="15" font-weight="700">Minha jornada</text>
+  <circle cx="1360" cy="40" r="20" fill="#f4eee0"/><text x="1360" y="46" text-anchor="middle" class="sans ink" font-size="16">L</text>
+
+  <text x="100" y="143" class="serif ink" font-size="43">Sua leitura está ganhando ritmo.</text>
+  <text x="102" y="177" class="sans muted" font-size="17">Uma visão leve das histórias que você terminou e das que ainda vêm pela frente.</text>
+  <rect x="1158" y="115" width="180" height="48" rx="10" fill="#fffdf9" stroke="#dfd1ba"/>
+  <text x="1180" y="145" class="sans ink" font-size="15">Ano de 2026</text><path d="m1309 136 6 6 6-6" fill="none" stroke="#4a1b0c" stroke-width="2"/>
+
+  <!-- Annual summary cards -->
+  <rect x="100" y="210" width="390" height="145" rx="18" class="card"/>
+  <text x="128" y="247" class="label sans">LIVROS CONCLUÍDOS</text>
+  <text x="128" y="316" class="serif green" font-size="62">28</text>
+  <text x="217" y="307" class="sans ink" font-size="16">de 30 da sua meta</text>
+  <rect x="217" y="323" width="225" height="9" rx="5" fill="#eee7da"/><rect x="217" y="323" width="210" height="9" rx="5" fill="#75a53b"/>
+  <text x="128" y="339" class="sans muted" font-size="13">Uau! faltam só 2 para completar.</text>
+  <rect x="510" y="210" width="390" height="145" rx="18" class="card"/>
+  <text x="538" y="247" class="label sans">SEU MÊS MAIS PRODUTIVO</text>
+  <text x="538" y="303" class="serif ink" font-size="35">Agosto</text>
+  <text x="538" y="333" class="sans muted" font-size="15">5 livros concluídos · que maratona!</text>
+  <g transform="translate(814 250)"><circle cx="0" cy="0" r="39" fill="#f4eee0"/><path d="M0-39 A39 39 0 1 1 -37 12" fill="none" stroke="#75a53b" stroke-width="10" stroke-linecap="round"/><text x="0" y="7" text-anchor="middle" class="sans ink" font-size="19" font-weight="700">8/12</text></g>
+  <rect x="920" y="210" width="418" height="145" rx="18" class="card"/>
+  <text x="948" y="247" class="label sans">SEU RITMO DE LEITURA</text>
+  <text x="948" y="302" class="serif ink" font-size="36">2,3 <tspan class="sans muted" font-size="16">livros / mês</tspan></text>
+  <text x="948" y="333" class="sans green" font-size="15" font-weight="700">↑ 18% <tspan class="muted" font-weight="400">em relação ao ano passado</tspan></text>
+
+  <!-- Chart -->
+  <rect x="100" y="382" width="790" height="375" rx="18" class="card"/>
+  <text x="130" y="425" class="serif ink" font-size="25">Sua jornada, mês a mês</text>
+  <text x="130" y="452" class="sans muted" font-size="14">Cada barra é uma história que chegou ao fim.</text>
+  <rect x="714" y="408" width="144" height="37" rx="18" fill="#f4eee0"/>
+  <circle cx="733" cy="426" r="5" fill="#75a53b"/><text x="746" y="431" class="sans ink" font-size="12">Livros lidos</text>
+  <path d="M160 680H845M160 625H845M160 570H845M160 515H845" stroke="#eee7da" stroke-width="1"/>
+  <text x="144" y="685" text-anchor="end" class="sans muted" font-size="12">0</text><text x="144" y="630" text-anchor="end" class="sans muted" font-size="12">2</text><text x="144" y="575" text-anchor="end" class="sans muted" font-size="12">4</text><text x="144" y="520" text-anchor="end" class="sans muted" font-size="12">6</text>
+  <g fill="#9abd70">
+    <rect x="184" y="625" width="34" height="55" rx="8"/><rect x="239" y="597" width="34" height="83" rx="8"/><rect x="294" y="652" width="34" height="28" rx="8"/><rect x="349" y="570" width="34" height="110" rx="8"/><rect x="404" y="625" width="34" height="55" rx="8"/><rect x="459" y="542" width="34" height="138" rx="8"/><rect x="514" y="597" width="34" height="83" rx="8"/><rect x="569" y="515" width="34" height="165" rx="8" fill="#5d921c"/><rect x="624" y="597" width="34" height="83" rx="8"/><rect x="679" y="625" width="34" height="55" rx="8"/><rect x="734" y="652" width="34" height="28" rx="8"/><rect x="789" y="625" width="34" height="55" rx="8"/>
+  </g>
+  <g class="sans muted" font-size="12" text-anchor="middle">
+    <text x="201" y="706">Jan</text><text x="256" y="706">Fev</text><text x="311" y="706">Mar</text><text x="366" y="706">Abr</text><text x="421" y="706">Mai</text><text x="476" y="706">Jun</text><text x="531" y="706">Jul</text><text x="586" y="706" fill="#4a1b0c" font-weight="700">Ago</text><text x="641" y="706">Set</text><text x="696" y="706">Out</text><text x="751" y="706">Nov</text><text x="806" y="706">Dez</text>
+  </g>
+  <rect x="526" y="478" width="132" height="48" rx="10" fill="#3d1b10"/><text x="592" y="498" text-anchor="middle" class="sans" fill="#fff" font-size="12">Agosto</text><text x="592" y="517" text-anchor="middle" class="sans" fill="#fff" font-size="14" font-weight="700">5 livros lidos</text>
+
+  <!-- Genre profile -->
+  <rect x="910" y="382" width="428" height="375" rx="18" class="card"/>
+  <text x="940" y="425" class="serif ink" font-size="25">Seu mapa de histórias</text>
+  <text x="940" y="452" class="sans muted" font-size="14">Os gêneros que fizeram parte do seu ano.</text>
+  <circle cx="1055" cy="565" r="75" fill="none" stroke="#eee7da" stroke-width="26"/>
+  <circle cx="1055" cy="565" r="75" fill="none" stroke="#5d921c" stroke-width="26" stroke-dasharray="108 363" transform="rotate(-90 1055 565)"/>
+  <circle cx="1055" cy="565" r="75" fill="none" stroke="#b78a5c" stroke-width="26" stroke-dasharray="80 391" stroke-dashoffset="-112" transform="rotate(-90 1055 565)"/>
+  <circle cx="1055" cy="565" r="75" fill="none" stroke="#d8b94f" stroke-width="26" stroke-dasharray="65 406" stroke-dashoffset="-197" transform="rotate(-90 1055 565)"/>
+  <circle cx="1055" cy="565" r="75" fill="none" stroke="#b9a7c9" stroke-width="26" stroke-dasharray="54 417" stroke-dashoffset="-267" transform="rotate(-90 1055 565)"/>
+  <text x="1055" y="559" text-anchor="middle" class="serif ink" font-size="28">28</text><text x="1055" y="581" text-anchor="middle" class="sans muted" font-size="12">livros</text>
+  <g class="sans" font-size="14">
+    <circle cx="1170" cy="512" r="6" fill="#5d921c"/><text x="1185" y="517" class="ink">Política</text><text x="1300" y="517" text-anchor="end" class="muted">30%</text>
+    <circle cx="1170" cy="544" r="6" fill="#b78a5c"/><text x="1185" y="549" class="ink">Autoajuda</text><text x="1300" y="549" text-anchor="end" class="muted">22%</text>
+    <circle cx="1170" cy="576" r="6" fill="#d8b94f"/><text x="1185" y="581" class="ink">Economia</text><text x="1300" y="581" text-anchor="end" class="muted">18%</text>
+    <circle cx="1170" cy="608" r="6" fill="#b9a7c9"/><text x="1185" y="613" class="ink">Biografia</text><text x="1300" y="613" text-anchor="end" class="muted">15%</text>
+    <circle cx="1170" cy="640" r="6" fill="#eee7da"/><text x="1185" y="645" class="ink">Outros</text><text x="1300" y="645" text-anchor="end" class="muted">15%</text>
+  </g>
+  <text x="940" y="711" class="sans green" font-size="14" font-weight="700">Curiosidade: seu ano foi cheio de ideias novas!</text>
+
+  <!-- Achievements and goal -->
+  <rect x="100" y="780" width="790" height="260" rx="18" class="card"/>
+  <text x="130" y="824" class="serif ink" font-size="25">Conquistas desbloqueadas</text>
+  <text x="130" y="850" class="sans muted" font-size="14">Pequenos marcos, grandes histórias.</text>
+  <g>
+    <rect x="130" y="875" width="220" height="128" rx="14" fill="#f7f2e7"/><circle cx="173" cy="918" r="25" fill="#e9d9ad"/><text x="173" y="927" text-anchor="middle" font-size="24">📚</text><text x="211" y="914" class="sans ink" font-size="15" font-weight="700">Clube dos 25</text><text x="211" y="936" class="sans muted" font-size="12">25 livros concluídos</text><text x="151" y="979" class="sans green" font-size="12" font-weight="700">DESBLOQUEADA</text>
+    <rect x="365" y="875" width="220" height="128" rx="14" fill="#f7f2e7"/><circle cx="408" cy="918" r="25" fill="#d8e6c4"/><text x="408" y="927" text-anchor="middle" font-size="24">🌱</text><text x="446" y="914" class="sans ink" font-size="15" font-weight="700">Novo capítulo</text><text x="446" y="936" class="sans muted" font-size="12">Leu 3 gêneros diferentes</text><text x="386" y="979" class="sans green" font-size="12" font-weight="700">DESBLOQUEADA</text>
+    <rect x="600" y="875" width="260" height="128" rx="14" fill="#fffaf0" stroke="#e9dfcf" stroke-dasharray="5 4"/><circle cx="643" cy="918" r="25" fill="#eee7da"/><text x="643" y="927" text-anchor="middle" font-size="24">✨</text><text x="681" y="914" class="sans ink" font-size="15" font-weight="700">Próxima parada</text><text x="681" y="936" class="sans muted" font-size="12">Complete sua meta anual</text><rect x="621" y="962" width="210" height="7" rx="4" fill="#eee7da"/><rect x="621" y="962" width="196" height="7" rx="4" fill="#9abd70"/>
+  </g>
+  <rect x="910" y="780" width="428" height="260" rx="18" fill="#4a1b0c"/>
+  <text x="944" y="824" class="label sans" fill="#d9c6a9">UM RECADO DA SUA ESTANTE</text>
+  <text x="944" y="872" class="serif" fill="#fffaf0" font-size="28">“Só mais um capítulo...”</text>
+  <text x="944" y="906" class="sans" fill="#eadfd0" font-size="15">Você já terminou 28 histórias este ano.</text>
+  <text x="944" y="930" class="sans" fill="#eadfd0" font-size="15">A próxima conquista está pertinho.</text>
+  <rect x="944" y="960" width="160" height="42" rx="21" fill="#f1e4c8"/><text x="1024" y="986" text-anchor="middle" class="sans ink" font-size="14" font-weight="700">Ver minha estante →</text>
+  <path d="M1191 960h88l14 14v28h-116v-28z" fill="#75a53b"/><path d="M1204 944h88l14 16h-88z" fill="#91b963"/><path d="M1215 927h88l14 17h-88z" fill="#b0cb8f"/><text x="1250" y="1030" text-anchor="middle" class="sans" fill="#eadfd0" font-size="12">sua pilha de histórias</text>
+
+  <text x="720" y="1083" text-anchor="middle" class="sans muted" font-size="13">CONCEITO VISUAL · Minha jornada de leitura</text>
+</svg>
