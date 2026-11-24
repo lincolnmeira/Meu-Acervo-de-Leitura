@@ -30,3 +30,4 @@ data/
 target/
 
 deploy/
+DEPLOY.md
