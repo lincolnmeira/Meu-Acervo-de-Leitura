@@ -28,3 +28,5 @@ data/
 
 # Saída de build do Maven (.class compilados, etc.) - gerada automaticamente por "mvn compile"
 target/
+
+deploy/
